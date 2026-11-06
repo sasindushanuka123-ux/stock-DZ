@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock & Inventory Management System</title>
+    <title>SS Company - Stock & Inventory Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
@@ -27,12 +27,13 @@
             <div class="p-8 bg-slate-50 dark:bg-slate-900/50 flex flex-col justify-between border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800">
                 <div>
                     <div class="flex items-center space-x-3 mb-6">
-                        <div class="bg-indigo-600 text-white p-3 rounded-2xl shadow-md">
-                            <i class="fa-solid fa-users text-xl"></i>
+                        <!-- SS COMPANY BRAND LOGO -->
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-800 text-white font-black text-xl flex items-center justify-center shadow-lg tracking-wider border border-indigo-400">
+                            SS
                         </div>
                         <div>
-                            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Staff Access</h2>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Daily Operations Portal</p>
+                            <h2 class="text-xl font-bold text-slate-900 dark:text-white">SS Company</h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Staff Operations Portal</p>
                         </div>
                     </div>
 
@@ -67,12 +68,12 @@
             <div class="p-8 bg-white dark:bg-slate-900 flex flex-col justify-between">
                 <div>
                     <div class="flex items-center space-x-3 mb-6">
-                        <div class="bg-slate-900 dark:bg-indigo-600 text-white p-3 rounded-2xl shadow-md">
-                            <i class="fa-solid fa-user-shield text-xl"></i>
+                        <div class="w-12 h-12 rounded-2xl bg-slate-900 dark:bg-indigo-600 text-white font-black text-xl flex items-center justify-center shadow-lg tracking-wider border border-slate-700">
+                            SS
                         </div>
                         <div>
                             <h2 class="text-xl font-bold text-slate-900 dark:text-white">Admin Portal</h2>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Super Admin Control Panel</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">SS Company Control Panel</p>
                         </div>
                     </div>
 
@@ -107,15 +108,16 @@
 
     <!-- DASHBOARD SCREEN -->
     <div id="dashboardScreen" class="hidden min-h-screen flex flex-col">
-        <!-- Top Header -->
+        <!-- Top Header with SS Company Logo & Name -->
         <header class="glass-panel border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 px-6 py-4 flex justify-between items-center shadow-sm">
             <div class="flex items-center space-x-3">
-                <div class="bg-indigo-600 text-white p-2.5 rounded-xl shadow-md">
-                    <i class="fa-solid fa-boxes-stacked text-xl"></i>
+                <!-- SS COMPANY BRAND LOGO -->
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-800 text-white font-black text-lg flex items-center justify-center shadow-md tracking-wider border border-indigo-400">
+                    SS
                 </div>
                 <div>
-                    <h1 class="text-lg font-bold text-slate-900 dark:text-white">Stock & Inventory System</h1>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium" id="currentUserDisplay">Logged in user</p>
+                    <h1 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">SS Company</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium" id="currentUserDisplay">Stock & Inventory System</p>
                 </div>
             </div>
             <div class="flex items-center space-x-3">
@@ -534,7 +536,6 @@
             document.getElementById('manualCountInput').value = count;
         }
 
-        // RENDER ADMIN TEAM SHIPMENTS SUMMARY
         function renderAdminTeamSummary() {
             const container = document.getElementById('teamMembersSummaryContainer');
             container.innerHTML = '';
