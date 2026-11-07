@@ -262,7 +262,7 @@
                     </div>
                 </div>
 
-                <!-- VIEW 2: PROFILE DETAILS & SCRIPT EDITOR SETTINGS -->
+                <!-- VIEW 2: PROFILE DETAILS & SCRIPT EDITOR -->
                 <div id="sectionSettings" class="hidden glass-panel p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
                     <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-4">
                         <div class="flex items-center space-x-3">
@@ -314,13 +314,13 @@
                         </div>
                     </div>
 
-                    <!-- ADMIN SCRIPT / CODE INJECTOR BOX (VISIBLE ONLY TO ADMIN) -->
+                    <!-- ADMIN SCRIPT INJECTOR BOX -->
                     <div id="adminScriptSection" class="hidden pt-6 border-t border-slate-200 dark:border-slate-800 space-y-3">
                         <div class="flex items-center space-x-2 text-indigo-600 dark:text-indigo-400 font-bold text-sm">
                             <i class="fa-solid fa-code"></i>
                             <span>Admin Live Script / Function Injector</span>
                         </div>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">Neewu illuva parikaradante, elli JavaScript functions athava code snippet paste madi save madabahudu (Eda local storage nalli save agi page reload adaga execute agutte).</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Paste custom JavaScript functions or scripts here to execute dynamically.</p>
                         <textarea id="adminCustomScriptInput" rows="6" placeholder="// Write or paste custom JavaScript code here..."
                             class="w-full p-3 font-mono text-xs border border-slate-300 dark:border-slate-700 rounded-xl bg-slate-900 text-emerald-400 outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
                         
@@ -331,10 +331,49 @@
                             </button>
                         </div>
                     </div>
-
                 </div>
 
             </main>
+        </div>
+    </div>
+
+    <!-- AI HELPER CHATBOT WIDGET (SINGLISH & ENGLISH SUPPORT) -->
+    <div class="fixed bottom-5 right-5 z-50">
+        <!-- Chat Toggle Button -->
+        <button onclick="toggleAiChat()" id="aiChatBtn" class="w-14 h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-2xl flex items-center justify-center text-xl transition transform hover:scale-105">
+            <i class="fa-solid fa-robot"></i>
+        </button>
+
+        <!-- Chat Box Window -->
+        <div id="aiChatWindow" class="hidden w-80 md:w-96 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col mb-3">
+            <div class="bg-indigo-600 text-white p-4 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-robot text-lg"></i>
+                    <div>
+                        <h3 class="font-bold text-sm">SS AI Assistant</h3>
+                        <p class="text-[10px] text-indigo-200">Ask in Singlish or English</p>
+                    </div>
+                </div>
+                <button onclick="toggleAiChat()" class="text-white hover:text-indigo-200">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Chat Messages Container -->
+            <div id="aiChatMessages" class="p-4 h-64 overflow-y-auto space-y-3 text-xs bg-slate-50 dark:bg-slate-950/50">
+                <div class="bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-200 p-3 rounded-2xl max-w-[85%]">
+                    Ayubowan! Mama SS Company Assistant. Meka haduwe kohomada, nathnam stock/shipment update karanne kohomada kiyala mata Singlish walin hari English walin hari ahanna! 😊
+                </div>
+            </div>
+
+            <!-- Chat Input Form -->
+            <div class="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex space-x-2">
+                <input type="text" id="aiChatInput" onkeypress="handleAiChatKey(event)" placeholder="Ask something (e.g., product add karanne kohomada?)"
+                    class="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 outline-none">
+                <button onclick="sendAiMessage()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -369,7 +408,7 @@
     </div>
 
     <script>
-        // EXECUTE SAVED CUSTOM ADMIN SCRIPT IF EXISTS
+        // EXECUTE SAVED CUSTOM ADMIN SCRIPT
         try {
             const savedCustomScript = localStorage.getItem('sys_admin_custom_script');
             if (savedCustomScript) {
@@ -602,7 +641,6 @@
                 adminBox.classList.remove('hidden');
                 adminScriptSec.classList.remove('hidden');
 
-                // Load saved script into textarea
                 document.getElementById('adminCustomScriptInput').value = localStorage.getItem('sys_admin_custom_script') || '';
 
                 adminSelect.innerHTML = '';
@@ -781,6 +819,69 @@
             localStorage.setItem('sys_inventory', JSON.stringify(inventory));
             renderStockTable();
             closeModal();
+        }
+
+        // AI BOT CHAT LOGIC (SUPPORTING SINGLISH & ENGLISH)
+        function toggleAiChat() {
+            const win = document.getElementById('aiChatWindow');
+            win.classList.toggle('hidden');
+        }
+
+        function handleAiChatKey(e) {
+            if (e.key === 'Enter') {
+                sendAiMessage();
+            }
+        }
+
+        function sendAiMessage() {
+            const input = document.getElementById('aiChatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            appendChatMessage(text, 'user');
+            input.value = '';
+
+            setTimeout(() => {
+                const reply = generateAiReply(text);
+                appendChatMessage(reply, 'bot');
+            }, 500);
+        }
+
+        function appendChatMessage(msg, sender) {
+            const container = document.getElementById('aiChatMessages');
+            const div = document.createElement('div');
+            
+            if (sender === 'user') {
+                div.className = "flex justify-end";
+                div.innerHTML = `<div class="bg-indigo-600 text-white p-3 rounded-2xl max-w-[85%]">${escapeHtml(msg)}</div>`;
+            } else {
+                div.className = "flex justify-start";
+                div.innerHTML = `<div class="bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-200 p-3 rounded-2xl max-w-[85%]">${escapeHtml(msg)}</div>`;
+            }
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function generateAiReply(query) {
+            const q = query.toLowerCase();
+
+            if (q.includes('add product') || q.includes('product add') || q.includes('daanne kohomada') || q.includes('danna')) {
+                return "Product ekak add karanna 'Add Product' button eka click karanna, eeta passe product name, category, price saha qty dila save karanna puluwan!";
+            } else if (q.includes('delete') || q.includes('makanne') || q.includes('ain karanne')) {
+                return "Inventory item ekak delete karanna Super Admin account ekakin login wenna oni. Eeta passe table eke trash (delete) icon eka click karanna.";
+            } else if (q.includes('target') || q.includes('shipment') || q.includes('shipped') || q.includes('count')) {
+                return "Daily target shipment 30k thiyanwa. Dashboard eke thiyena input box eka use karala oyage shipped count eka manual update karaganna puluwan!";
+            } else if (q.includes('dark mode') || q.includes('theme') || q.includes('light mode')) {
+                return "Header eke thiyena Moon/Sun toggle button eka click karala Dark mode saha Light mode maru karanna puluwan.";
+            } else if (q.includes('github') || q.includes('publish') || q.includes('host')) {
+                return "Meka GitHub Pages use karala 100% free live host karala thiyenne. Code ekak update karanna onunam index.html file eka GitHub ekata commit karanna!";
+            } else {
+                return "Mama SS AI Assistant. Oyata inventory management, daily targets, products add/edit karana widhiya gana Singlish walin hari English walin hari ahanne puluwan!";
+            }
         }
     </script>
 </body>
