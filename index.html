@@ -6,6 +6,9 @@
     <title>SS Company - Stock & Inventory Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Include Barcode & PDF Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -24,82 +27,70 @@
         <div class="max-w-4xl w-full bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2 border border-slate-700">
             
             <!-- STAFF LOGIN -->
-            <div class="p-8 bg-slate-50 dark:bg-slate-900/50 flex flex-col justify-between border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800">
-                <div>
-                    <div class="flex items-center space-x-3 mb-6">
-                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-800 text-white font-black text-xl flex items-center justify-center shadow-lg tracking-wider border border-indigo-400">
-                            SS
-                        </div>
-                        <div>
-                            <h2 class="text-xl font-bold text-slate-900 dark:text-white">SS Company</h2>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Staff Operations Portal</p>
-                        </div>
+            <div class="p-8 bg-slate-50 dark:bg-slate-900/50 flex flex-col justify-center border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-800 text-white font-black text-xl flex items-center justify-center shadow-lg tracking-wider border border-indigo-400">
+                        SS
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white">SS Company</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Staff Operations Portal</p>
+                    </div>
+                </div>
+
+                <form onsubmit="handleStaffLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Select Staff Member</label>
+                        <select id="staffUserSelect" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800">
+                            <!-- Loaded dynamically -->
+                        </select>
                     </div>
 
-                    <form onsubmit="handleStaffLogin(event)" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Select Staff Member</label>
-                            <select id="staffUserSelect" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800">
-                                <!-- Loaded dynamically -->
-                            </select>
-                        </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Password</label>
+                        <input type="password" id="staffPassInput" placeholder="Enter password" required
+                            class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
+                    </div>
 
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Password</label>
-                            <input type="password" id="staffPassInput" placeholder="Enter password (Default: 1234)" required
-                                class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
-                        </div>
+                    <div id="staffError" class="text-xs text-rose-600 font-bold hidden">Invalid Password!</div>
 
-                        <div id="staffError" class="text-xs text-rose-600 font-bold hidden">Invalid Password!</div>
-
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold text-sm shadow-md transition">
-                            Login as Staff <i class="fa-solid fa-arrow-right ml-2"></i>
-                        </button>
-                    </form>
-                </div>
-
-                <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 text-center">
-                    <span class="text-xs text-slate-400">Default Password: <b>1234</b></span>
-                </div>
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold text-sm shadow-md transition">
+                        Login as Staff <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </button>
+                </form>
             </div>
 
             <!-- ADMIN LOGIN -->
-            <div class="p-8 bg-white dark:bg-slate-900 flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center space-x-3 mb-6">
-                        <div class="w-12 h-12 rounded-2xl bg-slate-900 dark:bg-indigo-600 text-white font-black text-xl flex items-center justify-center shadow-lg tracking-wider border border-slate-700">
-                            SS
-                        </div>
-                        <div>
-                            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Admin Portal</h2>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">SS Company Control Panel</p>
-                        </div>
+            <div class="p-8 bg-white dark:bg-slate-900 flex flex-col justify-center">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-12 h-12 rounded-2xl bg-slate-900 dark:bg-indigo-600 text-white font-black text-xl flex items-center justify-center shadow-lg tracking-wider border border-slate-700">
+                        SS
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white">Admin Portal</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">SS Company Control Panel</p>
+                    </div>
+                </div>
+
+                <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Admin Username</label>
+                        <input type="text" id="adminUserInput" value="admin" required
+                            class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-slate-900 outline-none text-sm font-semibold text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800">
                     </div>
 
-                    <form onsubmit="handleAdminLogin(event)" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Admin Username</label>
-                            <input type="text" id="adminUserInput" value="admin" required
-                                class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-slate-900 outline-none text-sm font-semibold text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800">
-                        </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Admin Password</label>
+                        <input type="password" id="adminPassInput" placeholder="Enter Admin Password" required
+                            class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-slate-900 outline-none text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
+                    </div>
 
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Admin Password</label>
-                            <input type="password" id="adminPassInput" placeholder="Enter Admin Password" required
-                                class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-slate-900 outline-none text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
-                        </div>
+                    <div id="adminError" class="text-xs text-rose-600 font-bold hidden">Invalid Admin Credentials!</div>
 
-                        <div id="adminError" class="text-xs text-rose-600 font-bold hidden">Invalid Admin Credentials!</div>
-
-                        <button type="submit" class="w-full bg-slate-900 hover:bg-black dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white py-3 rounded-xl font-bold text-sm shadow-md transition">
-                            Login as Admin <i class="fa-solid fa-lock ml-2"></i>
-                        </button>
-                    </form>
-                </div>
-
-                <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
-                    <span class="text-xs text-slate-400">User: <b>admin</b> | Pass: <b>200105</b></span>
-                </div>
+                    <button type="submit" class="w-full bg-slate-900 hover:bg-black dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white py-3 rounded-xl font-bold text-sm shadow-md transition">
+                        Login as Admin <i class="fa-solid fa-lock ml-2"></i>
+                    </button>
+                </form>
             </div>
 
         </div>
@@ -152,6 +143,11 @@
                         <span>Dashboard & Stock</span>
                     </button>
                     
+                    <button onclick="switchView('waybill')" id="navWaybillBtn" class="w-full text-left hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-4 py-3 rounded-xl text-xs flex items-center space-x-3 transition border border-slate-100 dark:border-slate-800">
+                        <i class="fa-solid fa-file-invoice text-indigo-600 dark:text-indigo-400 text-sm"></i>
+                        <span>Waybill Generator</span>
+                    </button>
+
                     <button onclick="switchView('settings')" id="navSetBtn" class="w-full text-left hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-4 py-3 rounded-xl text-xs flex items-center space-x-3 transition border border-slate-100 dark:border-slate-800">
                         <i class="fa-solid fa-user-gear text-indigo-600 dark:text-indigo-400 text-sm"></i>
                         <span>Settings & Profile</span>
@@ -262,7 +258,51 @@
                     </div>
                 </div>
 
-                <!-- VIEW 2: PROFILE DETAILS & SCRIPT EDITOR -->
+                <!-- VIEW 2: WAYBILL GENERATOR MODULE -->
+                <div id="sectionWaybill" class="hidden space-y-6">
+                    <div class="glass-panel p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="bg-indigo-600 text-white p-3 rounded-2xl shadow-md">
+                                    <i class="fa-solid fa-file-invoice text-lg"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">Bulk Waybill Generator</h2>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Upload Excel/CSV file to generate A4 printable 6-up Waybills with Barcodes</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="p-6 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-4">
+                                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300">1. Upload Excel / CSV File</label>
+                                <input type="file" id="excelFileInput" accept=".csv, .xlsx, .xls" class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
+                                <p class="text-[11px] text-slate-400">Columns required: Name, Address, Phone, Item, Qty</p>
+                                <button onclick="processUploadedExcel()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center space-x-2">
+                                    <i class="fa-solid fa-upload"></i>
+                                    <span>Process and Generate Waybills</span>
+                                </button>
+                            </div>
+
+                            <div class="p-6 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col justify-between">
+                                <div>
+                                    <h3 class="font-bold text-sm text-slate-800 dark:text-white mb-2">Export Options</h3>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">Once processed, click below to download all waybills formatted into A4 pages (6 waybills per page) with auto-generated Barcodes.</p>
+                                </div>
+                                <button onclick="downloadWaybillsPDF()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center space-x-2 mt-4">
+                                    <i class="fa-solid fa-download"></i>
+                                    <span>Save & Download PDF (A4 6-Up)</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="waybillPreviewContainer" class="pt-6 border-t border-slate-200 dark:border-slate-800 overflow-x-auto">
+                            <p class="text-xs text-slate-400 italic text-center py-8">No waybills loaded yet. Upload an Excel file above to preview.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 3: SETTINGS & PROFILE -->
                 <div id="sectionSettings" class="hidden glass-panel p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
                     <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-4">
                         <div class="flex items-center space-x-3">
@@ -337,46 +377,6 @@
         </div>
     </div>
 
-    <!-- GEMINI FULL ACCESS CHATBOT WIDGET -->
-    <div class="fixed bottom-5 right-5 z-50">
-        <!-- Chat Toggle Button (Gemini Branded) -->
-        <button onclick="toggleAiChat()" id="aiChatBtn" class="w-14 h-14 bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 hover:opacity-90 text-white rounded-full shadow-2xl flex items-center justify-center text-xl transition transform hover:scale-105" title="Open Gemini Full Access Bot">
-            <i class="fa-solid fa-wand-magic-sparkles"></i>
-        </button>
-
-        <!-- Chat Box Window -->
-        <div id="aiChatWindow" class="hidden w-80 md:w-96 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col mb-3">
-            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 flex justify-between items-center">
-                <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
-                    <div>
-                        <h3 class="font-bold text-sm">Gemini Full-Access</h3>
-                        <p class="text-[10px] text-indigo-100">Full control over Login & Dashboard</p>
-                    </div>
-                </div>
-                <button onclick="toggleAiChat()" class="text-white hover:text-indigo-200">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
-
-            <!-- Chat Messages Container -->
-            <div id="aiChatMessages" class="p-4 h-64 overflow-y-auto space-y-3 text-xs bg-slate-50 dark:bg-slate-950/50">
-                <div class="bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-200 p-3 rounded-2xl max-w-[85%]">
-                    Hello! I am Gemini. I have full control over this system. Tell me to change login titles, switch backgrounds, manage inventory, or run any script (`run: [code]`) instantly! ✨
-                </div>
-            </div>
-
-            <!-- Chat Input Form -->
-            <div class="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex space-x-2">
-                <input type="text" id="aiChatInput" onkeypress="handleAiChatKey(event)" placeholder="Ask Gemini (e.g., login title eka My System karanna)"
-                    class="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 outline-none">
-                <button onclick="sendAiMessage()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition">
-                    <i class="fa-solid fa-paper-plane"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- ADD / EDIT PRODUCT MODAL -->
     <div id="itemModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 w-96 shadow-2xl space-y-4">
@@ -437,20 +437,7 @@
         window.onload = function() {
             renderStaffLoginDropdown();
             initTheme();
-            checkAndAddHeaderBotBtn();
         };
-
-        function checkAndAddHeaderBotBtn() {
-            const headerActions = document.querySelector('header .flex.items-center.space-x-3');
-            if (headerActions && !document.getElementById('dedicatedAiBtnHeader')) {
-                const botBtn = document.createElement('button');
-                botBtn.id = 'dedicatedAiBtnHeader';
-                botBtn.onclick = function() { toggleAiChat(); };
-                botBtn.className = "bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition shadow-sm";
-                botBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>Gemini Bot</span>`;
-                headerActions.insertBefore(botBtn, headerActions.firstChild);
-            }
-        }
 
         function initTheme() {
             const savedTheme = localStorage.getItem('sys_theme') || 'light';
@@ -544,7 +531,6 @@
             switchView('inventory');
             renderStockTable();
             updateTargetProgressUI();
-            checkAndAddHeaderBotBtn();
         }
 
         function logout() {
@@ -561,27 +547,160 @@
 
         function switchView(target) {
             const vInv = document.getElementById('sectionInventory');
+            const vWb = document.getElementById('sectionWaybill');
             const vSet = document.getElementById('sectionSettings');
+            
             const btnInv = document.getElementById('navInvBtn');
+            const btnWb = document.getElementById('navWaybillBtn');
             const btnSet = document.getElementById('navSetBtn');
 
+            // Hide all views first
+            if(vInv) vInv.classList.add('hidden');
+            if(vWb) vWb.classList.add('hidden');
+            if(vSet) vSet.classList.add('hidden');
+
+            // Reset button styles
+            if(btnInv) btnInv.className = "w-full text-left hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-4 py-3 rounded-xl text-xs flex items-center space-x-3 transition border border-slate-100 dark:border-slate-800";
+            if(btnWb) btnWb.className = "w-full text-left hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-4 py-3 rounded-xl text-xs flex items-center space-x-3 transition border border-slate-100 dark:border-slate-800";
+            if(btnSet) btnSet.className = "w-full text-left hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-4 py-3 rounded-xl text-xs flex items-center space-x-3 transition border border-slate-100 dark:border-slate-800";
+
             if (target === 'inventory') {
-                vInv.classList.remove('hidden');
-                vSet.classList.add('hidden');
-                btnInv.className = "w-full text-left bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold px-4 py-3 rounded-xl text-xs flex items-center space-x-3 transition";
-                btnSet.className = "w-full text-left hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-4 py-3 rounded-xl text-xs flex items-center space-x-3 transition border border-slate-100 dark:border-slate-800";
+                if(vInv) vInv.classList.remove('hidden');
+                if(btnInv) btnInv.className = "w-full text-left bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold px-4 py-3 rounded-xl text-xs flex items-center space-x-3 transition";
                 updateTargetProgressUI();
                 if (loggedInKey && accounts[loggedInKey] && accounts[loggedInKey].role === 'admin') {
                     renderAdminTeamSummary();
                 }
+            } else if (target === 'waybill') {
+                if(vWb) vWb.classList.remove('hidden');
+                if(btnWb) btnWb.className = "w-full text-left bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold px-4 py-3 rounded-xl text-xs flex items-center space-x-3 transition";
             } else if (target === 'settings') {
-                vInv.classList.add('hidden');
-                vSet.classList.remove('hidden');
-                btnSet.className = "w-full text-left bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold px-4 py-3 rounded-xl text-xs flex items-center space-x-3 transition";
-                btnInv.className = "w-full text-left hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-4 py-3 rounded-xl text-xs flex items-center space-x-3 transition border border-slate-100 dark:border-slate-800";
-
+                if(vSet) vSet.classList.remove('hidden');
+                if(btnSet) btnSet.className = "w-full text-left bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold px-4 py-3 rounded-xl text-xs flex items-center space-x-3 transition";
                 initializeSettingsView();
             }
+        }
+
+        // EXCEL / CSV TO A4 6-UP WAYBILLS PROCESSING
+        function processUploadedExcel() {
+            const fileInput = document.getElementById('excelFileInput');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert("Please select an Excel or CSV file first!");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split(/\r\n|\n/);
+                let parsedData = [];
+
+                for (let i = 1; i < lines.length; i++) {
+                    if (!lines[i].trim()) continue;
+                    const cols = lines[i].split(',');
+                    if (cols.length >= 2) {
+                        parsedData.push({
+                            name: cols[0] ? cols[0].replace(/['"]+/g, '').trim() : 'Customer',
+                            address: cols[1] ? cols[1].replace(/['"]+/g, '').trim() : 'No Address',
+                            phone: cols[2] ? cols[2].replace(/['"]+/g, '').trim() : '0770000000',
+                            item: cols[3] ? cols[3].replace(/['"]+/g, '').trim() : 'General Item',
+                            qty: cols[4] ? cols[4].replace(/['"]+/g, '').trim() : '1'
+                        });
+                    }
+                }
+
+                if (parsedData.length === 0) {
+                    alert("Could not parse data. Ensure file is CSV format with proper headers!");
+                    return;
+                }
+
+                renderWaybillPreviews(parsedData);
+            };
+
+            reader.readAsText(file);
+        }
+
+        function renderWaybillPreviews(dataList) {
+            const container = document.getElementById('waybillPreviewContainer');
+            container.innerHTML = '';
+
+            let pagesHtml = '';
+            for (let i = 0; i < dataList.length; i += 6) {
+                const chunk = dataList.slice(i, i + 6);
+                
+                let pageCards = '';
+                chunk.forEach((item) => {
+                    const trackingNo = "SS-" + Math.floor(100000 + Math.random() * 900000);
+                    pageCards += `
+                        <div class="waybill-card" style="border: 1.5px dashed #64748b; border-radius: 8px; padding: 12px; background: #ffffff; font-family: sans-serif; font-size: 11px; color: #0f172a; height: 180px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
+                            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #cbd5e1; padding-bottom: 6px;">
+                                <div>
+                                    <strong style="font-size: 13px; color: #4338ca;">SS COMPANY</strong>
+                                    <div style="font-size: 9px; color: #64748b;">Dispatch & Logistics</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: bold; font-size: 10px;">TRK: ${trackingNo}</div>
+                                    <svg class="barcode" data-value="${trackingNo}" style="height: 25px; width: 100px;"></svg>
+                                </div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                                <div>
+                                    <span style="color: #64748b; font-size: 9px;">DELIVER TO:</span><br>
+                                    <strong>${item.name}</strong><br>
+                                    <span>${item.address}</span><br>
+                                    <span>📞 ${item.phone}</span>
+                                </div>
+                                <div style="background: #f8fafc; padding: 6px; border-radius: 6px;">
+                                    <span style="color: #64748b; font-size: 9px;">ITEM DETAILS:</span><br>
+                                    <strong>${item.item}</strong><br>
+                                    <span>Qty: ${item.qty} | COD: LKR 0.00</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 4px; font-size: 9px; color: #64748b;">
+                                <span>Sender: SS Company, Katugastota</span>
+                                <span>Authorized Signature: _________</span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                pagesHtml += `
+                    <div class="a4-page" style="width: 210mm; min-height: 297mm; padding: 15mm; margin: 0 auto 20mm auto; background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); gap: 10mm; box-sizing: border-box;">
+                        ${pageCards}
+                    </div>
+                `;
+            }
+
+            container.innerHTML = `<div id="pdfExportWrapper">${pagesHtml}</div>`;
+
+            setTimeout(() => {
+                document.querySelectorAll('.barcode').forEach(svg => {
+                    const val = svg.getAttribute('data-value');
+                    try {
+                        JsBarcode(svg, val, { format: "CODE128", displayValue: false, margin: 0 });
+                    } catch(err) { console.error(err); }
+                });
+            }, 200);
+        }
+
+        function downloadWaybillsPDF() {
+            const element = document.getElementById('pdfExportWrapper');
+            if (!element) {
+                alert("Please upload and generate waybills first!");
+                return;
+            }
+
+            const opt = {
+                margin:       0,
+                filename:     'SS_Company_Waybills.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().from(element).set(opt).save();
         }
 
         function updateManualProgress() {
@@ -836,145 +955,6 @@
             localStorage.setItem('sys_inventory', JSON.stringify(inventory));
             renderStockTable();
             closeModal();
-        }
-
-        // ========================================================
-        // GEMINI FULL ACCESS UNRESTRICTED BOT LOGIC (LOGIN + DASHBOARD)
-        // ========================================================
-        function toggleAiChat() {
-            const win = document.getElementById('aiChatWindow');
-            if(win) win.classList.toggle('hidden');
-        }
-
-        function handleAiChatKey(e) {
-            if (e.key === 'Enter') {
-                sendAiMessage();
-            }
-        }
-
-        function sendAiMessage() {
-            const input = document.getElementById('aiChatInput');
-            if(!input) return;
-            const text = input.value.trim();
-            if (!text) return;
-
-            appendChatMessage(text, 'user');
-            input.value = '';
-
-            setTimeout(() => {
-                const reply = generateGeminiFullControlReply(text);
-                appendChatMessage(reply, 'bot');
-            }, 400);
-        }
-
-        function appendChatMessage(msg, sender) {
-            const container = document.getElementById('aiChatMessages');
-            if(!container) return;
-            const div = document.createElement('div');
-            
-            if (sender === 'user') {
-                div.className = "flex justify-end";
-                div.innerHTML = `<div class="bg-indigo-600 text-white p-3 rounded-2xl max-w-[85%]">${escapeHtml(msg)}</div>`;
-            } else {
-                div.className = "flex justify-start";
-                div.innerHTML = `<div class="bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-200 p-3 rounded-2xl max-w-[85%]">${escapeHtml(msg)}</div>`;
-            }
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
-
-        // GEMINI NATURAL LANGUAGE FULL CONTROL ENGINE
-        function generateGeminiFullControlReply(query) {
-            const q = query.toLowerCase();
-
-            // 1. THEMES & MODES
-            if (q.includes('dark') || q.includes('kalu') || q.includes('night')) {
-                document.documentElement.classList.add('dark');
-                localStorage.setItem('sys_theme', 'dark');
-                return "🌙 Gemini: Dark Mode activated successfully across the site!";
-            }
-            if (q.includes('light') || q.includes('eliya') || q.includes('day')) {
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('sys_theme', 'light');
-                return "☀️ Gemini: Light Mode activated successfully across the site!";
-            }
-
-            // 2. BACKGROUND COLOR CHANGES
-            if (q.includes('background') || q.includes('bg ') || q.includes('patte')) {
-                let colors = ['red', 'blue', 'green', 'black', 'white', 'yellow', 'gray', 'purple', 'pink', 'orange', 'slate', 'indigo'];
-                let found = colors.find(c => q.includes(c));
-                if (found) {
-                    document.body.style.backgroundColor = (found === 'black' ? '#020617' : found);
-                    return `🎨 Gemini: Background color changed instantly to '${found}'!`;
-                }
-            }
-
-            // 3. LOGIN PAGE EDITING (උදා: "login title eka My System karanna")
-            if (q.includes('login') || q.includes('portal') || q.includes('staff login') || q.includes('admin portal')) {
-                let parts = query.split(/to|as|les|wona|karanna|danna/i);
-                if (parts.length > 1) {
-                    let newText = parts[parts.length - 1].trim();
-                    let headings = document.querySelectorAll('#loginScreen h2');
-                    headings.forEach(h => h.innerText = newText);
-                    return `✨ Gemini: Login screen titles successfully updated to: "${newText}"`;
-                }
-            }
-
-            // 4. MAIN DASHBOARD TITLE / HEADING EDITING
-            if (q.includes('title') || q.includes('heading') || q.includes('name')) {
-                let parts = query.split(/to|as|les|wona|karanna|danna/i);
-                if (parts.length > 1) {
-                    let newText = parts[parts.length - 1].trim();
-                    let h1 = document.querySelector('h1');
-                    if (h1) {
-                        h1.innerText = newText;
-                        return `✨ Gemini: Main Dashboard title changed to "${newText}"!`;
-                    }
-                }
-            }
-
-            // 5. NAVIGATION / VIEW SWITCHING
-            if (q.includes('setting') || q.includes('profile')) {
-                if(document.getElementById('dashboardScreen').classList.contains('hidden')) {
-                    return "⚠️ Gemini: Please login first to access Settings!";
-                }
-                switchView('settings');
-                return "⚙️ Gemini: Switched to Settings panel.";
-            }
-            if (q.includes('dashboard') || q.includes('stock') || q.includes('home')) {
-                if(document.getElementById('dashboardScreen').classList.contains('hidden')) {
-                    return "⚠️ Gemini: Please login first!";
-                }
-                switchView('inventory');
-                return "📊 Gemini: Switched to Inventory Stock dashboard.";
-            }
-
-            // 6. PRODUCT ACTIONS
-            if (q.includes('add product') || q.includes('product') || q.includes('item')) {
-                if(document.getElementById('dashboardScreen').classList.contains('hidden')) {
-                    return "⚠️ Gemini: Please login first to add products!";
-                }
-                openAddItemModal();
-                return "📦 Gemini: Opened the 'Add Product' modal!";
-            }
-
-            // 7. DIRECT FULL DOM / JAVASCRIPT EXECUTION (ඕනෑම දෙයක් කිරීමට)
-            // උදා: run: document.querySelector('#loginScreen').style.background = 'pink'
-            if (q.startsWith('code:') || q.startsWith('run:') || q.startsWith('exec:')) {
-                try {
-                    let code = query.replace(/^code:\s*|^run:\s*|^exec:\s*/i, '');
-                    let res = eval(code);
-                    return `⚡ Gemini Full-Control Executed! Result: ${res !== undefined ? res : 'Done'}`;
-                } catch (err) {
-                    return `❌ Gemini Error: ${err.message}`;
-                }
-            }
-
-            return `I am Gemini, your Full-Access AI Bot. You can edit Login titles, change backgrounds, switch views, or run any raw JavaScript code using 'run: [code]' instantly!`;
         }
     </script>
 </body>
