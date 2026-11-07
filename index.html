@@ -27,7 +27,6 @@
             <div class="p-8 bg-slate-50 dark:bg-slate-900/50 flex flex-col justify-between border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800">
                 <div>
                     <div class="flex items-center space-x-3 mb-6">
-                        <!-- SS COMPANY BRAND LOGO -->
                         <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-800 text-white font-black text-xl flex items-center justify-center shadow-lg tracking-wider border border-indigo-400">
                             SS
                         </div>
@@ -108,10 +107,9 @@
 
     <!-- DASHBOARD SCREEN -->
     <div id="dashboardScreen" class="hidden min-h-screen flex flex-col">
-        <!-- Top Header with SS Company Logo & Name -->
+        <!-- Top Header -->
         <header class="glass-panel border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 px-6 py-4 flex justify-between items-center shadow-sm">
             <div class="flex items-center space-x-3">
-                <!-- SS COMPANY BRAND LOGO -->
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-800 text-white font-black text-lg flex items-center justify-center shadow-md tracking-wider border border-indigo-400">
                     SS
                 </div>
@@ -156,7 +154,7 @@
                     
                     <button onclick="switchView('settings')" id="navSetBtn" class="w-full text-left hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-4 py-3 rounded-xl text-xs flex items-center space-x-3 transition border border-slate-100 dark:border-slate-800">
                         <i class="fa-solid fa-user-gear text-indigo-600 dark:text-indigo-400 text-sm"></i>
-                        <span>Profile Details</span>
+                        <span>Settings & Profile</span>
                     </button>
                 </div>
             </aside>
@@ -198,7 +196,7 @@
                         </div>
                     </div>
 
-                    <!-- ADMIN OVERVIEW BOX (VISIBLE ONLY FOR ADMIN) -->
+                    <!-- ADMIN OVERVIEW BOX -->
                     <div id="adminOverviewBox" class="hidden glass-panel p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
                         <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
                             <h2 class="font-bold text-slate-800 dark:text-white text-base flex items-center space-x-2">
@@ -207,9 +205,7 @@
                             </h2>
                             <span class="px-3 py-1 bg-slate-900 text-white dark:bg-indigo-600 rounded-xl text-xs font-bold" id="totalTeamShippedBadge">Total Shipped: 0 / 90</span>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="teamMembersSummaryContainer">
-                            <!-- Populated dynamically for Admin -->
-                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="teamMembersSummaryContainer"></div>
                     </div>
 
                     <!-- DAILY TARGET MANUAL PROGRESS BOX -->
@@ -230,7 +226,6 @@
                             </div>
                         </div>
 
-                        <!-- Progress Bar Container -->
                         <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-4 overflow-hidden border border-slate-300 dark:border-slate-700">
                             <div id="targetProgressBar" class="bg-indigo-600 h-full transition-all duration-500 rounded-full" style="width: 0%"></div>
                         </div>
@@ -261,15 +256,13 @@
                                         <th class="p-3 text-right">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody id="stockTableBody" class="divide-y divide-slate-100 dark:divide-slate-800">
-                                    <!-- Dynamic rows -->
-                                </tbody>
+                                <tbody id="stockTableBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <!-- VIEW 2: PROFILE DETAILS & SETTINGS -->
+                <!-- VIEW 2: PROFILE DETAILS & SCRIPT EDITOR SETTINGS -->
                 <div id="sectionSettings" class="hidden glass-panel p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
                     <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-4">
                         <div class="flex items-center space-x-3">
@@ -277,8 +270,8 @@
                                 <i class="fa-solid fa-user-gear text-lg"></i>
                             </div>
                             <div>
-                                <h2 class="text-xl font-bold text-slate-900 dark:text-white" id="settingsHeaderTitle">Profile Details</h2>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Change your name and password</p>
+                                <h2 class="text-xl font-bold text-slate-900 dark:text-white" id="settingsHeaderTitle">Settings & Profile</h2>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Manage credentials and system code</p>
                             </div>
                         </div>
                         <button onclick="switchView('inventory')" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 transition">
@@ -291,7 +284,6 @@
                     <div id="adminSelectorBox" class="hidden p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2 max-w-md">
                         <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-400">Admin: Select Account to Edit</label>
                         <select id="adminAccountSelect" onchange="onAdminAccountDropdownChange()" class="w-full px-4 py-3 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 outline-none">
-                            <!-- Populated dynamically -->
                         </select>
                     </div>
 
@@ -321,6 +313,25 @@
                             </button>
                         </div>
                     </div>
+
+                    <!-- ADMIN SCRIPT / CODE INJECTOR BOX (VISIBLE ONLY TO ADMIN) -->
+                    <div id="adminScriptSection" class="hidden pt-6 border-t border-slate-200 dark:border-slate-800 space-y-3">
+                        <div class="flex items-center space-x-2 text-indigo-600 dark:text-indigo-400 font-bold text-sm">
+                            <i class="fa-solid fa-code"></i>
+                            <span>Admin Live Script / Function Injector</span>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Neewu illuva parikaradante, elli JavaScript functions athava code snippet paste madi save madabahudu (Eda local storage nalli save agi page reload adaga execute agutte).</p>
+                        <textarea id="adminCustomScriptInput" rows="6" placeholder="// Write or paste custom JavaScript code here..."
+                            class="w-full p-3 font-mono text-xs border border-slate-300 dark:border-slate-700 rounded-xl bg-slate-900 text-emerald-400 outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                        
+                        <div class="flex justify-end">
+                            <button onclick="saveCustomAdminScript()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-1.5">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                <span>Save & Run Script</span>
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
 
             </main>
@@ -358,6 +369,17 @@
     </div>
 
     <script>
+        // EXECUTE SAVED CUSTOM ADMIN SCRIPT IF EXISTS
+        try {
+            const savedCustomScript = localStorage.getItem('sys_admin_custom_script');
+            if (savedCustomScript) {
+                const func = new Function(savedCustomScript);
+                func();
+            }
+        } catch (e) {
+            console.error("Custom script execution error:", e);
+        }
+
         let accounts = JSON.parse(localStorage.getItem('sys_user_accounts')) || {
             'staff1': { id: 'staff1', name: 'Staff 1', pass: '1234', role: 'staff', dailyCount: 0 },
             'staff2': { id: 'staff2', name: 'Staff 2', pass: '1234', role: 'staff', dailyCount: 0 },
@@ -571,12 +593,17 @@
             const currentAcc = accounts[loggedInKey];
             const adminBox = document.getElementById('adminSelectorBox');
             const adminSelect = document.getElementById('adminAccountSelect');
+            const adminScriptSec = document.getElementById('adminScriptSection');
 
             document.getElementById('settingsMsgBox').classList.add('hidden');
 
             if (currentAcc.role === 'admin') {
-                document.getElementById('settingsHeaderTitle').innerText = "Super Admin: Profile Details & Management";
+                document.getElementById('settingsHeaderTitle').innerText = "Super Admin: Settings & Script Editor";
                 adminBox.classList.remove('hidden');
+                adminScriptSec.classList.remove('hidden');
+
+                // Load saved script into textarea
+                document.getElementById('adminCustomScriptInput').value = localStorage.getItem('sys_admin_custom_script') || '';
 
                 adminSelect.innerHTML = '';
                 for (let k in accounts) {
@@ -590,10 +617,18 @@
             } else {
                 document.getElementById('settingsHeaderTitle').innerText = "Profile Details";
                 adminBox.classList.add('hidden');
+                adminScriptSec.classList.add('hidden');
                 activeEditingKey = loggedInKey;
             }
 
             fillEditForm(activeEditingKey);
+        }
+
+        function saveCustomAdminScript() {
+            const scriptCode = document.getElementById('adminCustomScriptInput').value;
+            localStorage.setItem('sys_admin_custom_script', scriptCode);
+            alert("✅ Custom script saved successfully! Refreshing page to apply changes.");
+            location.reload();
         }
 
         function onAdminAccountDropdownChange() {
