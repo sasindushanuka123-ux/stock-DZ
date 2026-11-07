@@ -337,10 +337,10 @@
         </div>
     </div>
 
-    <!-- AI HELPER CHATBOT WIDGET (SINGLISH & ENGLISH SUPPORT) -->
+    <!-- AI HELPER CHATBOT WIDGET (FULL ACCESS UNRESTRICTED) -->
     <div class="fixed bottom-5 right-5 z-50">
         <!-- Chat Toggle Button -->
-        <button onclick="toggleAiChat()" id="aiChatBtn" class="w-14 h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-2xl flex items-center justify-center text-xl transition transform hover:scale-105">
+        <button onclick="toggleAiChat()" id="aiChatBtn" class="w-14 h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-2xl flex items-center justify-center text-xl transition transform hover:scale-105" title="Open AI Full Access Bot">
             <i class="fa-solid fa-robot"></i>
         </button>
 
@@ -350,8 +350,8 @@
                 <div class="flex items-center space-x-2">
                     <i class="fa-solid fa-robot text-lg"></i>
                     <div>
-                        <h3 class="font-bold text-sm">SS AI Assistant</h3>
-                        <p class="text-[10px] text-indigo-200">Ask in Singlish or English</p>
+                        <h3 class="font-bold text-sm">SS Full-Access Bot</h3>
+                        <p class="text-[10px] text-indigo-200">Can edit Login, Dashboard & Anything!</p>
                     </div>
                 </div>
                 <button onclick="toggleAiChat()" class="text-white hover:text-indigo-200">
@@ -362,13 +362,13 @@
             <!-- Chat Messages Container -->
             <div id="aiChatMessages" class="p-4 h-64 overflow-y-auto space-y-3 text-xs bg-slate-50 dark:bg-slate-950/50">
                 <div class="bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-200 p-3 rounded-2xl max-w-[85%]">
-                    Ayubowan! Mama SS Company Assistant. Meka haduwe kohomada, nathnam stock/shipment update karanne kohomada kiyala mata Singlish walin hari English walin hari ahanna! 😊
+                    Ayubowan! Mama SS Full-Access Bot. Login page eke inna nisa unath, oyata oona oona widihata site eke mokak hari wenas karanna kiwwoth (e.g. login title eka maru karanna, background eka change karanna, run: code) mama e welawema eka karannam! 😊
                 </div>
             </div>
 
             <!-- Chat Input Form -->
             <div class="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex space-x-2">
-                <input type="text" id="aiChatInput" onkeypress="handleAiChatKey(event)" placeholder="Ask something (e.g., product add karanne kohomada?)"
+                <input type="text" id="aiChatInput" onkeypress="handleAiChatKey(event)" placeholder="Command here (e.g., login title eka My Store karanna)"
                     class="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 outline-none">
                 <button onclick="sendAiMessage()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition">
                     <i class="fa-solid fa-paper-plane"></i>
@@ -437,7 +437,20 @@
         window.onload = function() {
             renderStaffLoginDropdown();
             initTheme();
+            checkAndAddHeaderBotBtn();
         };
+
+        function checkAndAddHeaderBotBtn() {
+            const headerActions = document.querySelector('header .flex.items-center.space-x-3');
+            if (headerActions && !document.getElementById('dedicatedAiBtnHeader')) {
+                const botBtn = document.createElement('button');
+                botBtn.id = 'dedicatedAiBtnHeader';
+                botBtn.onclick = function() { toggleAiChat(); };
+                botBtn.className = "bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition shadow-sm";
+                botBtn.innerHTML = `<i class="fa-solid fa-robot"></i><span>AI Bot</span>`;
+                headerActions.insertBefore(botBtn, headerActions.firstChild);
+            }
+        }
 
         function initTheme() {
             const savedTheme = localStorage.getItem('sys_theme') || 'light';
@@ -467,6 +480,7 @@
 
         function renderStaffLoginDropdown() {
             const select = document.getElementById('staffUserSelect');
+            if(!select) return;
             select.innerHTML = '';
             for (let key in accounts) {
                 if (accounts[key].role === 'staff') {
@@ -499,6 +513,7 @@
             if (adminAcc && (userVal === adminAcc.name || userVal === 'admin') && passVal === adminAcc.pass) {
                 loginSuccess('admin');
             } else {
+                document.getElementById('adminError').classList.add('hidden'); // safe reset
                 document.getElementById('adminError').classList.remove('hidden');
             }
         }
@@ -530,6 +545,7 @@
             switchView('inventory');
             renderStockTable();
             updateTargetProgressUI();
+            checkAndAddHeaderBotBtn();
         }
 
         function logout() {
@@ -556,7 +572,7 @@
                 btnInv.className = "w-full text-left bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold px-4 py-3 rounded-xl text-xs flex items-center space-x-3 transition";
                 btnSet.className = "w-full text-left hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-4 py-3 rounded-xl text-xs flex items-center space-x-3 transition border border-slate-100 dark:border-slate-800";
                 updateTargetProgressUI();
-                if (accounts[loggedInKey].role === 'admin') {
+                if (loggedInKey && accounts[loggedInKey] && accounts[loggedInKey].role === 'admin') {
                     renderAdminTeamSummary();
                 }
             } else if (target === 'settings') {
@@ -599,6 +615,7 @@
 
         function renderAdminTeamSummary() {
             const container = document.getElementById('teamMembersSummaryContainer');
+            if(!container) return;
             container.innerHTML = '';
             let totalTeamShipped = 0;
             let totalTeamTarget = 0;
@@ -715,6 +732,7 @@
 
         function renderStockTable() {
             const tbody = document.getElementById('stockTableBody');
+            if(!tbody) return;
             const search = document.getElementById('searchInput').value.toLowerCase();
             tbody.innerHTML = '';
 
@@ -738,7 +756,7 @@
                         <button onclick="updateQty(${item.id}, 1)" class="bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950 dark:hover:bg-emerald-900 text-emerald-600 dark:text-emerald-400 px-2 py-1 rounded-lg text-xs font-bold">+1</button>
                         <button onclick="updateQty(${item.id}, -1)" class="bg-rose-50 hover:bg-rose-100 dark:bg-rose-950 dark:hover:bg-rose-900 text-rose-600 dark:text-rose-400 px-2 py-1 rounded-lg text-xs font-bold">-1</button>
                         <button onclick="openEditItemModal(${item.id})" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 p-1 ml-1" title="Edit Product"><i class="fa-solid fa-pen-to-square"></i></button>
-                        ${accounts[loggedInKey].role === 'admin' ? `<button onclick="deleteItem(${item.id})" class="text-slate-400 hover:text-rose-600 p-1 ml-1" title="Delete Product"><i class="fa-solid fa-trash"></i></button>` : ''}
+                        ${loggedInKey && accounts[loggedInKey] && accounts[loggedInKey].role === 'admin' ? `<button onclick="deleteItem(${item.id})" class="text-slate-400 hover:text-rose-600 p-1 ml-1" title="Delete Product"><i class="fa-solid fa-trash"></i></button>` : ''}
                     </td>
                 `;
                 tbody.appendChild(row);
@@ -821,10 +839,12 @@
             closeModal();
         }
 
-        // AI BOT CHAT LOGIC (SUPPORTING SINGLISH & ENGLISH)
+        // ========================================================
+        // ULTIMATE UNRESTRICTED FULL ACCESS AI BOT LOGIC (LOGIN + DASHBOARD)
+        // ========================================================
         function toggleAiChat() {
             const win = document.getElementById('aiChatWindow');
-            win.classList.toggle('hidden');
+            if(win) win.classList.toggle('hidden');
         }
 
         function handleAiChatKey(e) {
@@ -835,6 +855,7 @@
 
         function sendAiMessage() {
             const input = document.getElementById('aiChatInput');
+            if(!input) return;
             const text = input.value.trim();
             if (!text) return;
 
@@ -842,13 +863,14 @@
             input.value = '';
 
             setTimeout(() => {
-                const reply = generateAiReply(text);
+                const reply = generateAiFullControlReply(text);
                 appendChatMessage(reply, 'bot');
-            }, 500);
+            }, 400);
         }
 
         function appendChatMessage(msg, sender) {
             const container = document.getElementById('aiChatMessages');
+            if(!container) return;
             const div = document.createElement('div');
             
             if (sender === 'user') {
@@ -866,22 +888,94 @@
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
-        function generateAiReply(query) {
+        // FULL ACCESS NATURAL LANGUAGE ENGINE FOR LOGIN PAGE & DASHBOARD
+        function generateAiFullControlReply(query) {
             const q = query.toLowerCase();
 
-            if (q.includes('add product') || q.includes('product add') || q.includes('daanne kohomada') || q.includes('danna')) {
-                return "Product ekak add karanna 'Add Product' button eka click karanna, eeta passe product name, category, price saha qty dila save karanna puluwan!";
-            } else if (q.includes('delete') || q.includes('makanne') || q.includes('ain karanne')) {
-                return "Inventory item ekak delete karanna Super Admin account ekakin login wenna oni. Eeta passe table eke trash (delete) icon eka click karanna.";
-            } else if (q.includes('target') || q.includes('shipment') || q.includes('shipped') || q.includes('count')) {
-                return "Daily target shipment 30k thiyanwa. Dashboard eke thiyena input box eka use karala oyage shipped count eka manual update karaganna puluwan!";
-            } else if (q.includes('dark mode') || q.includes('theme') || q.includes('light mode')) {
-                return "Header eke thiyena Moon/Sun toggle button eka click karala Dark mode saha Light mode maru karanna puluwan.";
-            } else if (q.includes('github') || q.includes('publish') || q.includes('host')) {
-                return "Meka GitHub Pages use karala 100% free live host karala thiyenne. Code ekak update karanna onunam index.html file eka GitHub ekata commit karanna!";
-            } else {
-                return "Mama SS AI Assistant. Oyata inventory management, daily targets, products add/edit karana widhiya gana Singlish walin hari English walin hari ahanne puluwan!";
+            // 1. THEMES & MODES
+            if (q.includes('dark') || q.includes('kalu') || q.includes('night')) {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('sys_theme', 'dark');
+                return "🌙 Dark Mode activated successfully across the site!";
             }
+            if (q.includes('light') || q.includes('eliya') || q.includes('day')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('sys_theme', 'light');
+                return "☀️ Light Mode activated successfully across the site!";
+            }
+
+            // 2. BACKGROUND COLOR CHANGES
+            if (q.includes('background') || q.includes('bg ') || q.includes('patte')) {
+                let colors = ['red', 'blue', 'green', 'black', 'white', 'yellow', 'gray', 'purple', 'pink', 'orange', 'slate', 'indigo'];
+                let found = colors.find(c => q.includes(c));
+                if (found) {
+                    document.body.style.backgroundColor = (found === 'black' ? '#020617' : found);
+                    return `🎨 Background color changed instantly to '${found}'!`;
+                }
+            }
+
+            // 3. LOGIN PAGE EDITING (උදා: "login title eka My System karanna")
+            if (q.includes('login') || q.includes('portal') || q.includes('staff login') || q.includes('admin portal')) {
+                let parts = query.split(/to|as|les|wona|karanna|danna/i);
+                if (parts.length > 1) {
+                    let newText = parts[parts.length - 1].trim();
+                    let headings = document.querySelectorAll('#loginScreen h2');
+                    headings.forEach(h => h.innerText = newText);
+                    return `✨ Login screen titles successfully updated to: "${newText}"`;
+                }
+            }
+
+            // 4. MAIN DASHBOARD TITLE / HEADING EDITING
+            if (q.includes('title') || q.includes('heading') || q.includes('name')) {
+                let parts = query.split(/to|as|les|wona|karanna|danna/i);
+                if (parts.length > 1) {
+                    let newText = parts[parts.length - 1].trim();
+                    let h1 = document.querySelector('h1');
+                    if (h1) {
+                        h1.innerText = newText;
+                        return `✨ Main Dashboard title changed to "${newText}"!`;
+                    }
+                }
+            }
+
+            // 5. NAVIGATION / VIEW SWITCHING
+            if (q.includes('setting') || q.includes('profile')) {
+                if(document.getElementById('dashboardScreen').classList.contains('hidden')) {
+                    return "⚠️ Please login first to access Settings!";
+                }
+                switchView('settings');
+                return "⚙️ Switched to Settings panel.";
+            }
+            if (q.includes('dashboard') || q.includes('stock') || q.includes('home')) {
+                if(document.getElementById('dashboardScreen').classList.contains('hidden')) {
+                    return "⚠️ Please login first!";
+                }
+                switchView('inventory');
+                return "📊 Switched to Inventory Stock dashboard.";
+            }
+
+            // 6. PRODUCT ACTIONS
+            if (q.includes('add product') || q.includes('product') || q.includes('item')) {
+                if(document.getElementById('dashboardScreen').classList.contains('hidden')) {
+                    return "⚠️ Please login first to add products!";
+                }
+                openAddItemModal();
+                return "📦 Opened the 'Add Product' modal!";
+            }
+
+            // 7. DIRECT FULL DOM / JAVASCRIPT EXECUTION (ඕනෑම දෙයක් කිරීමට)
+            // උදා: run: document.querySelector('#loginScreen').style.background = 'pink'
+            if (q.startsWith('code:') || q.startsWith('run:') || q.startsWith('exec:')) {
+                try {
+                    let code = query.replace(/^code:\s*|^run:\s*|^exec:\s*/i, '');
+                    let res = eval(code);
+                    return `⚡ Full-Access Executed! Result: ${res !== undefined ? res : 'Done'}`;
+                } catch (err) {
+                    return `❌ Execution Error: ${err.message}`;
+                }
+            }
+
+            return `I am your Ultimate Full-Access Bot. You can edit Login titles, change backgrounds, switch views, or run any raw JavaScript code using 'run: [code]' instantly!`;
         }
     </script>
 </body>
