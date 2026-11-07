@@ -337,21 +337,21 @@
         </div>
     </div>
 
-    <!-- AI HELPER CHATBOT WIDGET (FULL ACCESS UNRESTRICTED) -->
+    <!-- GEMINI FULL ACCESS CHATBOT WIDGET -->
     <div class="fixed bottom-5 right-5 z-50">
-        <!-- Chat Toggle Button -->
-        <button onclick="toggleAiChat()" id="aiChatBtn" class="w-14 h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-2xl flex items-center justify-center text-xl transition transform hover:scale-105" title="Open AI Full Access Bot">
-            <i class="fa-solid fa-robot"></i>
+        <!-- Chat Toggle Button (Gemini Branded) -->
+        <button onclick="toggleAiChat()" id="aiChatBtn" class="w-14 h-14 bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 hover:opacity-90 text-white rounded-full shadow-2xl flex items-center justify-center text-xl transition transform hover:scale-105" title="Open Gemini Full Access Bot">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
         </button>
 
         <!-- Chat Box Window -->
         <div id="aiChatWindow" class="hidden w-80 md:w-96 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col mb-3">
-            <div class="bg-indigo-600 text-white p-4 flex justify-between items-center">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 flex justify-between items-center">
                 <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-robot text-lg"></i>
+                    <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
                     <div>
-                        <h3 class="font-bold text-sm">SS Full-Access Bot</h3>
-                        <p class="text-[10px] text-indigo-200">Can edit Login, Dashboard & Anything!</p>
+                        <h3 class="font-bold text-sm">Gemini Full-Access</h3>
+                        <p class="text-[10px] text-indigo-100">Full control over Login & Dashboard</p>
                     </div>
                 </div>
                 <button onclick="toggleAiChat()" class="text-white hover:text-indigo-200">
@@ -362,13 +362,13 @@
             <!-- Chat Messages Container -->
             <div id="aiChatMessages" class="p-4 h-64 overflow-y-auto space-y-3 text-xs bg-slate-50 dark:bg-slate-950/50">
                 <div class="bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-200 p-3 rounded-2xl max-w-[85%]">
-                    Ayubowan! Mama SS Full-Access Bot. Login page eke inna nisa unath, oyata oona oona widihata site eke mokak hari wenas karanna kiwwoth (e.g. login title eka maru karanna, background eka change karanna, run: code) mama e welawema eka karannam! 😊
+                    Hello! I am Gemini. I have full control over this system. Tell me to change login titles, switch backgrounds, manage inventory, or run any script (`run: [code]`) instantly! ✨
                 </div>
             </div>
 
             <!-- Chat Input Form -->
             <div class="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex space-x-2">
-                <input type="text" id="aiChatInput" onkeypress="handleAiChatKey(event)" placeholder="Command here (e.g., login title eka My Store karanna)"
+                <input type="text" id="aiChatInput" onkeypress="handleAiChatKey(event)" placeholder="Ask Gemini (e.g., login title eka My System karanna)"
                     class="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 outline-none">
                 <button onclick="sendAiMessage()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition">
                     <i class="fa-solid fa-paper-plane"></i>
@@ -446,8 +446,8 @@
                 const botBtn = document.createElement('button');
                 botBtn.id = 'dedicatedAiBtnHeader';
                 botBtn.onclick = function() { toggleAiChat(); };
-                botBtn.className = "bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition shadow-sm";
-                botBtn.innerHTML = `<i class="fa-solid fa-robot"></i><span>AI Bot</span>`;
+                botBtn.className = "bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition shadow-sm";
+                botBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>Gemini Bot</span>`;
                 headerActions.insertBefore(botBtn, headerActions.firstChild);
             }
         }
@@ -513,7 +513,6 @@
             if (adminAcc && (userVal === adminAcc.name || userVal === 'admin') && passVal === adminAcc.pass) {
                 loginSuccess('admin');
             } else {
-                document.getElementById('adminError').classList.add('hidden'); // safe reset
                 document.getElementById('adminError').classList.remove('hidden');
             }
         }
@@ -840,7 +839,7 @@
         }
 
         // ========================================================
-        // ULTIMATE UNRESTRICTED FULL ACCESS AI BOT LOGIC (LOGIN + DASHBOARD)
+        // GEMINI FULL ACCESS UNRESTRICTED BOT LOGIC (LOGIN + DASHBOARD)
         // ========================================================
         function toggleAiChat() {
             const win = document.getElementById('aiChatWindow');
@@ -863,7 +862,7 @@
             input.value = '';
 
             setTimeout(() => {
-                const reply = generateAiFullControlReply(text);
+                const reply = generateGeminiFullControlReply(text);
                 appendChatMessage(reply, 'bot');
             }, 400);
         }
@@ -888,20 +887,20 @@
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
-        // FULL ACCESS NATURAL LANGUAGE ENGINE FOR LOGIN PAGE & DASHBOARD
-        function generateAiFullControlReply(query) {
+        // GEMINI NATURAL LANGUAGE FULL CONTROL ENGINE
+        function generateGeminiFullControlReply(query) {
             const q = query.toLowerCase();
 
             // 1. THEMES & MODES
             if (q.includes('dark') || q.includes('kalu') || q.includes('night')) {
                 document.documentElement.classList.add('dark');
                 localStorage.setItem('sys_theme', 'dark');
-                return "🌙 Dark Mode activated successfully across the site!";
+                return "🌙 Gemini: Dark Mode activated successfully across the site!";
             }
             if (q.includes('light') || q.includes('eliya') || q.includes('day')) {
                 document.documentElement.classList.remove('dark');
                 localStorage.setItem('sys_theme', 'light');
-                return "☀️ Light Mode activated successfully across the site!";
+                return "☀️ Gemini: Light Mode activated successfully across the site!";
             }
 
             // 2. BACKGROUND COLOR CHANGES
@@ -910,7 +909,7 @@
                 let found = colors.find(c => q.includes(c));
                 if (found) {
                     document.body.style.backgroundColor = (found === 'black' ? '#020617' : found);
-                    return `🎨 Background color changed instantly to '${found}'!`;
+                    return `🎨 Gemini: Background color changed instantly to '${found}'!`;
                 }
             }
 
@@ -921,7 +920,7 @@
                     let newText = parts[parts.length - 1].trim();
                     let headings = document.querySelectorAll('#loginScreen h2');
                     headings.forEach(h => h.innerText = newText);
-                    return `✨ Login screen titles successfully updated to: "${newText}"`;
+                    return `✨ Gemini: Login screen titles successfully updated to: "${newText}"`;
                 }
             }
 
@@ -933,7 +932,7 @@
                     let h1 = document.querySelector('h1');
                     if (h1) {
                         h1.innerText = newText;
-                        return `✨ Main Dashboard title changed to "${newText}"!`;
+                        return `✨ Gemini: Main Dashboard title changed to "${newText}"!`;
                     }
                 }
             }
@@ -941,26 +940,26 @@
             // 5. NAVIGATION / VIEW SWITCHING
             if (q.includes('setting') || q.includes('profile')) {
                 if(document.getElementById('dashboardScreen').classList.contains('hidden')) {
-                    return "⚠️ Please login first to access Settings!";
+                    return "⚠️ Gemini: Please login first to access Settings!";
                 }
                 switchView('settings');
-                return "⚙️ Switched to Settings panel.";
+                return "⚙️ Gemini: Switched to Settings panel.";
             }
             if (q.includes('dashboard') || q.includes('stock') || q.includes('home')) {
                 if(document.getElementById('dashboardScreen').classList.contains('hidden')) {
-                    return "⚠️ Please login first!";
+                    return "⚠️ Gemini: Please login first!";
                 }
                 switchView('inventory');
-                return "📊 Switched to Inventory Stock dashboard.";
+                return "📊 Gemini: Switched to Inventory Stock dashboard.";
             }
 
             // 6. PRODUCT ACTIONS
             if (q.includes('add product') || q.includes('product') || q.includes('item')) {
                 if(document.getElementById('dashboardScreen').classList.contains('hidden')) {
-                    return "⚠️ Please login first to add products!";
+                    return "⚠️ Gemini: Please login first to add products!";
                 }
                 openAddItemModal();
-                return "📦 Opened the 'Add Product' modal!";
+                return "📦 Gemini: Opened the 'Add Product' modal!";
             }
 
             // 7. DIRECT FULL DOM / JAVASCRIPT EXECUTION (ඕනෑම දෙයක් කිරීමට)
@@ -969,13 +968,13 @@
                 try {
                     let code = query.replace(/^code:\s*|^run:\s*|^exec:\s*/i, '');
                     let res = eval(code);
-                    return `⚡ Full-Access Executed! Result: ${res !== undefined ? res : 'Done'}`;
+                    return `⚡ Gemini Full-Control Executed! Result: ${res !== undefined ? res : 'Done'}`;
                 } catch (err) {
-                    return `❌ Execution Error: ${err.message}`;
+                    return `❌ Gemini Error: ${err.message}`;
                 }
             }
 
-            return `I am your Ultimate Full-Access Bot. You can edit Login titles, change backgrounds, switch views, or run any raw JavaScript code using 'run: [code]' instantly!`;
+            return `I am Gemini, your Full-Access AI Bot. You can edit Login titles, change backgrounds, switch views, or run any raw JavaScript code using 'run: [code]' instantly!`;
         }
     </script>
 </body>
