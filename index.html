@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Include Libraries for Excel Reading, Barcodes, and PDF Generation -->
+    <!-- External Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -21,6 +21,13 @@
         .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
         .dark .glass-panel { background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px); }
         .bg-gradient-custom { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+
+        @media print {
+            body * { visibility: hidden; }
+            #pdfExportWrapper, #pdfExportWrapper * { visibility: visible; }
+            #pdfExportWrapper { position: absolute; left: 0; top: 0; width: 100%; }
+            .a4-page { page-break-after: always; box-shadow: none !important; margin: 0 !important; }
+        }
     </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 font-sans min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300">
@@ -45,7 +52,6 @@
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Select Staff Member</label>
                         <select id="staffUserSelect" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800">
-                            <!-- Loaded dynamically -->
                         </select>
                     </div>
 
@@ -115,19 +121,16 @@
             <div class="flex items-center space-x-3">
                 <span id="roleBadge" class="px-3 py-1 rounded-xl text-xs font-bold bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300">Staff Mode</span>
                 
-                <!-- Dark / Light Mode Toggle Button -->
-                <button onclick="toggleTheme()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-amber-400 px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition shadow-sm" title="Toggle Theme">
+                <button onclick="toggleTheme()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-amber-400 px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition shadow-sm">
                     <i id="themeIcon" class="fa-solid fa-moon"></i>
                     <span id="themeBtnText">Dark</span>
                 </button>
 
-                <!-- Settings Button -->
                 <button onclick="switchView('settings')" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition shadow-sm">
                     <i class="fa-solid fa-gear text-indigo-600 dark:text-indigo-400"></i>
                     <span>Settings</span>
                 </button>
 
-                <!-- Logout Button -->
                 <button onclick="logout()" class="bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/50 dark:hover:bg-rose-900/50 text-rose-600 dark:text-rose-400 px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-1 transition shadow-sm">
                     <i class="fa-solid fa-right-from-bracket"></i>
                     <span>Logout</span>
@@ -176,11 +179,11 @@
 
                         <div class="glass-panel p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
                             <div>
-                                <p class="text-xs font-semibold uppercase text-slate-400">Low Stock Alert</p>
-                                <h3 class="text-2xl font-bold mt-1 text-amber-600 dark:text-amber-400" id="lowStockCount">0 Items</h3>
+                                <p class="text-xs font-semibold uppercase text-slate-400">Today Shipping Count</p>
+                                <h3 class="text-2xl font-bold mt-1 text-indigo-600 dark:text-indigo-400" id="todayShippingCountDisplay">0 Packages</h3>
                             </div>
-                            <div class="p-3 bg-amber-100 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 rounded-xl">
-                                <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                            <div class="p-3 bg-indigo-100 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-xl">
+                                <i class="fa-solid fa-truck-fast text-xl"></i>
                             </div>
                         </div>
 
@@ -202,7 +205,7 @@
                                 <i class="fa-solid fa-chart-line text-indigo-600 dark:text-indigo-400"></i>
                                 <span>Super Admin: Team Daily Shipments Summary</span>
                             </h2>
-                            <span class="px-3 py-1 bg-slate-900 text-white dark:bg-indigo-600 rounded-xl text-xs font-bold" id="totalTeamShippedBadge">Total Shipped: 0 / 90</span>
+                            <span class="px-3 py-1 bg-slate-900 text-white dark:bg-indigo-600 rounded-xl text-xs font-bold" id="totalTeamShippedBadge">Total Shipped: 0</span>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="teamMembersSummaryContainer"></div>
                     </div>
@@ -216,11 +219,11 @@
                             </div>
                             
                             <div class="flex items-center space-x-2">
-                                <input type="number" id="manualCountInput" min="0" max="30" placeholder="Enter count"
+                                <input type="number" id="manualCountInput" min="0" max="1000" placeholder="Count"
                                     class="w-32 px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
                                 <button onclick="updateManualProgress()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-1.5">
                                     <i class="fa-solid fa-check"></i>
-                                    <span>Update Shipped</span>
+                                    <span>Update Progress</span>
                                 </button>
                             </div>
                         </div>
@@ -233,13 +236,13 @@
                     <!-- Stock Table -->
                     <div class="glass-panel p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
                         <div class="flex flex-col md:flex-row justify-between md:items-center gap-4">
-                            <h2 class="font-bold text-slate-800 dark:text-white text-lg">Inventory Stock List</h2>
+                            <h2 class="font-bold text-slate-800 dark:text-white text-lg">Master Products List</h2>
                             <div class="flex space-x-2">
                                 <input type="text" id="searchInput" oninput="renderStockTable()" placeholder="Search item..."
                                     class="px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
-                                <button onclick="openAddItemModal()" id="addStockBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 shadow-sm">
+                                <button onclick="openAddItemModal()" id="addStockBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 shadow-sm hidden">
                                     <i class="fa-solid fa-plus"></i>
-                                    <span>Add Product</span>
+                                    <span>Add Product (Admin)</span>
                                 </button>
                             </div>
                         </div>
@@ -251,7 +254,6 @@
                                         <th class="p-3">Product Name</th>
                                         <th class="p-3">Category</th>
                                         <th class="p-3">Price (LKR)</th>
-                                        <th class="p-3">Stock Quantity</th>
                                         <th class="p-3 text-right">Actions</th>
                                     </tr>
                                 </thead>
@@ -290,7 +292,7 @@
                             <div class="p-6 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col justify-between">
                                 <div>
                                     <h3 class="font-bold text-sm text-slate-800 dark:text-white mb-2">Export Options</h3>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400">Once processed, click below to download all waybills formatted into A4 pages (6 waybills per page) with auto-generated Barcodes.</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">Download formatted A4 PDF (6 waybills per page) with barcodes & customized products.</p>
                                 </div>
                                 <button onclick="downloadWaybillsPDF()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center space-x-2 mt-4">
                                     <i class="fa-solid fa-download"></i>
@@ -314,7 +316,7 @@
                             </div>
                             <div>
                                 <h2 class="text-xl font-bold text-slate-900 dark:text-white" id="settingsHeaderTitle">Settings & Profile</h2>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Manage credentials and system code</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Manage credentials and system settings</p>
                             </div>
                         </div>
                         <button onclick="switchView('inventory')" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 transition">
@@ -356,34 +358,16 @@
                             </button>
                         </div>
                     </div>
-
-                    <!-- ADMIN SCRIPT INJECTOR BOX -->
-                    <div id="adminScriptSection" class="hidden pt-6 border-t border-slate-200 dark:border-slate-800 space-y-3">
-                        <div class="flex items-center space-x-2 text-indigo-600 dark:text-indigo-400 font-bold text-sm">
-                            <i class="fa-solid fa-code"></i>
-                            <span>Admin Live Script / Function Injector</span>
-                        </div>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">Paste custom JavaScript functions or scripts here to execute dynamically.</p>
-                        <textarea id="adminCustomScriptInput" rows="6" placeholder="// Write or paste custom JavaScript code here..."
-                            class="w-full p-3 font-mono text-xs border border-slate-300 dark:border-slate-700 rounded-xl bg-slate-900 text-emerald-400 outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
-                        
-                        <div class="flex justify-end">
-                            <button onclick="saveCustomAdminScript()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-1.5">
-                                <i class="fa-solid fa-floppy-disk"></i>
-                                <span>Save & Run Script</span>
-                            </button>
-                        </div>
-                    </div>
                 </div>
 
             </main>
         </div>
     </div>
 
-    <!-- ADD / EDIT PRODUCT MODAL -->
+    <!-- ADD / EDIT PRODUCT MODAL (ADMIN ONLY) -->
     <div id="itemModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 w-96 shadow-2xl space-y-4">
-            <h3 class="font-bold text-lg text-slate-800 dark:text-white" id="modalTitle">Add New Product</h3>
+            <h3 class="font-bold text-lg text-slate-800 dark:text-white" id="modalTitle">Add New Master Product</h3>
             <input type="hidden" id="editItemId">
             <div class="space-y-3">
                 <div>
@@ -398,10 +382,6 @@
                     <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Price (LKR)</label>
                     <input type="number" id="prodPrice" placeholder="Price (LKR)" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 outline-none">
                 </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Stock Quantity</label>
-                    <input type="number" id="prodQty" placeholder="Stock Quantity" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 outline-none">
-                </div>
             </div>
             <div class="flex justify-end space-x-2 pt-2">
                 <button onclick="closeModal()" class="px-4 py-2 text-xs text-slate-500 dark:text-slate-400 font-semibold">Cancel</button>
@@ -411,29 +391,20 @@
     </div>
 
     <script>
-        // EXECUTE SAVED CUSTOM ADMIN SCRIPT
-        try {
-            const savedCustomScript = localStorage.getItem('sys_admin_custom_script');
-            if (savedCustomScript) {
-                const func = new Function(savedCustomScript);
-                func();
-            }
-        } catch (e) {
-            console.error("Custom script execution error:", e);
-        }
-
         let accounts = JSON.parse(localStorage.getItem('sys_user_accounts')) || {
             'staff1': { id: 'staff1', name: 'Staff 1', pass: '1234', role: 'staff', dailyCount: 0 },
             'staff2': { id: 'staff2', name: 'Staff 2', pass: '1234', role: 'staff', dailyCount: 0 },
             'admin': { id: 'admin', name: 'admin', pass: '200105', role: 'admin', dailyCount: 0 }
         };
 
-        let inventory = JSON.parse(localStorage.getItem('sys_inventory')) || [
-            { id: 1, name: "Sony Alpha Camera", category: "Equipment", price: 250000, qty: 5 },
-            { id: 2, name: "Lighting Softbox Kit", category: "Accessories", price: 35000, qty: 2 },
-            { id: 3, name: "Wireless Microphone", category: "Audio", price: 18000, qty: 12 }
+        let masterProducts = JSON.parse(localStorage.getItem('sys_master_products')) || [
+            { id: 1, name: "Flex Tape Large", category: "Hardware", price: 1500 },
+            { id: 2, name: "Mens Handloom Sarong", category: "Apparel", price: 2800 },
+            { id: 3, name: "Sony Alpha Camera", category: "Electronics", price: 250000 },
+            { id: 4, name: "Wireless Microphone", category: "Audio", price: 18000 }
         ];
 
+        let loadedWaybillData = [];
         let loggedInKey = null;
         let activeEditingKey = null;
 
@@ -457,15 +428,9 @@
 
         function toggleTheme() {
             const isDark = document.documentElement.classList.toggle('dark');
-            if (isDark) {
-                localStorage.setItem('sys_theme', 'dark');
-                document.getElementById('themeIcon').className = "fa-solid fa-sun";
-                document.getElementById('themeBtnText').innerText = "Light";
-            } else {
-                localStorage.setItem('sys_theme', 'light');
-                document.getElementById('themeIcon').className = "fa-solid fa-moon";
-                document.getElementById('themeBtnText').innerText = "Dark";
-            }
+            localStorage.setItem('sys_theme', isDark ? 'dark' : 'light');
+            document.getElementById('themeIcon').className = isDark ? "fa-solid fa-sun" : "fa-solid fa-moon";
+            document.getElementById('themeBtnText').innerText = isDark ? "Light" : "Dark";
         }
 
         function renderStaffLoginDropdown() {
@@ -519,16 +484,19 @@
 
             const badge = document.getElementById('roleBadge');
             const adminBox = document.getElementById('adminOverviewBox');
+            const addStockBtn = document.getElementById('addStockBtn');
 
             if (user.role === 'admin') {
                 badge.innerText = 'Super Admin Mode';
                 badge.className = 'px-3 py-1 rounded-xl text-xs font-bold bg-slate-900 dark:bg-indigo-600 text-white';
                 adminBox.classList.remove('hidden');
+                addStockBtn.classList.remove('hidden');
                 renderAdminTeamSummary();
             } else {
                 badge.innerText = 'Staff Mode';
                 badge.className = 'px-3 py-1 rounded-xl text-xs font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300';
                 adminBox.classList.add('hidden');
+                addStockBtn.classList.add('hidden');
             }
 
             switchView('inventory');
@@ -582,7 +550,7 @@
             }
         }
 
-        // PERFECT EXCEL PARSING WITH EXACT TRACKING NUMBER & 6-UP A4 LAYOUT
+        // ACCURATE EXCEL READ & AUTO UPDATE TODAY SHIPPING COUNT
         function processUploadedExcel() {
             const fileInput = document.getElementById('excelFileInput');
             if (!fileInput.files || fileInput.files.length === 0) {
@@ -607,34 +575,41 @@
                         return;
                     }
 
-                    let parsedData = [];
+                    loadedWaybillData = [];
                     
                     for (let i = 1; i < rawRows.length; i++) {
                         const row = rawRows[i];
                         if (!row || row.length === 0) continue;
 
-                        // Tracking number from Column F (index 5) or fallback
-                        let trackingNo = row[5];
+                        let trackingNo = row[5] || row[0]; // Tracking from Col F or Col A
                         if (!trackingNo || String(trackingNo).trim() === '') {
-                            trackingNo = "SS-" + Math.floor(100000 + Math.random() * 900000);
+                            trackingNo = "RA" + Math.floor(100000 + Math.random() * 900000);
                         }
 
-                        parsedData.push({
+                        loadedWaybillData.push({
+                            id: i,
                             name: row[0] ? String(row[0]).trim() : 'Customer',
                             address: row[1] ? String(row[1]).trim() : 'No Address',
                             phone: row[2] ? String(row[2]).trim() : '0770000000',
-                            item: row[3] ? String(row[3]).trim() : 'General Item',
+                            item: row[3] ? String(row[3]).trim() : (masterProducts[0] ? masterProducts[0].name : 'General Item'),
                             qty: row[4] ? String(row[4]).trim() : '1',
                             trackingNo: String(trackingNo).trim()
                         });
                     }
 
-                    if (parsedData.length === 0) {
+                    if (loadedWaybillData.length === 0) {
                         alert("No valid rows found in Excel!");
                         return;
                     }
 
-                    renderWaybillPreviews(parsedData);
+                    // Auto Update Staff Today Shipping Count
+                    if (loggedInKey && accounts[loggedInKey]) {
+                        accounts[loggedInKey].dailyCount = (accounts[loggedInKey].dailyCount || 0) + loadedWaybillData.length;
+                        localStorage.setItem('sys_user_accounts', JSON.stringify(accounts));
+                        updateTargetProgressUI();
+                    }
+
+                    renderWaybillPreviews();
                 } catch(err) {
                     console.error("Excel Read Error:", err);
                     alert("Error reading Excel file: " + err.message);
@@ -644,42 +619,83 @@
             reader.readAsArrayBuffer(file);
         }
 
-        function renderWaybillPreviews(dataList) {
+        function updateWaybillItem(index, newItemValue) {
+            if (loadedWaybillData[index]) {
+                loadedWaybillData[index].item = newItemValue;
+                const labelElem = document.getElementById(`waybill-item-label-${index}`);
+                if (labelElem) {
+                    labelElem.innerText = newItemValue;
+                }
+            }
+        }
+
+        function renderWaybillPreviews() {
             const container = document.getElementById('waybillPreviewContainer');
             container.innerHTML = '';
 
             let pagesHtml = '';
-            for (let i = 0; i < dataList.length; i += 6) {
-                const chunk = dataList.slice(i, i + 6);
+            for (let i = 0; i < loadedWaybillData.length; i += 6) {
+                const chunk = loadedWaybillData.slice(i, i + 6);
                 
                 let pageCards = '';
-                chunk.forEach((item) => {
+                chunk.forEach((item, chunkIdx) => {
+                    const globalIdx = i + chunkIdx;
                     const trackingNo = item.trackingNo;
+
+                    // Build Product Options Dropdown from Master Products
+                    let productOptions = masterProducts.map(p => 
+                        `<option value="${p.name}" ${p.name === item.item ? 'selected' : ''}>${p.name}</option>`
+                    ).join('');
+
+                    // Add custom option if item from excel is not in master list
+                    if (!masterProducts.some(p => p.name === item.item)) {
+                        productOptions += `<option value="${item.item}" selected>${item.item}</option>`;
+                    }
+
                     pageCards += `
-                        <div class="waybill-card" style="border: 1.5px dashed #475569; border-radius: 6px; padding: 10px; background: #ffffff; font-family: sans-serif; font-size: 11px; color: #0f172a; height: 86mm; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; page-break-inside: avoid; overflow: hidden;">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1.5px solid #334155; padding-bottom: 6px;">
+                        <div class="waybill-card" style="border: 1.5px dashed #475569; border-radius: 6px; padding: 10px; background: #ffffff; font-family: sans-serif; font-size: 11px; color: #0f172a; height: 88mm; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; page-break-inside: avoid; overflow: hidden; position: relative;">
+                            
+                            <!-- Header Bar with Tracking Code Exactly under Cursor Position -->
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1.5px solid #334155; padding-bottom: 4px;">
                                 <div>
                                     <strong style="font-size: 13px; color: #1e293b; letter-spacing: 0.5px;">SS COMPANY</strong>
-                                    <div style="font-size: 9px; color: #64748b; font-weight: 600;">DISPATCH & LOGISTICS DIVISION</div>
+                                    <div style="font-size: 8.5px; color: #64748b; font-weight: 600;">DISPATCH & LOGISTICS DIVISION</div>
                                 </div>
-                                <div style="text-align: right;">
-                                    <svg class="barcode" data-value="${trackingNo}" style="height: 32px; width: 140px; display: block;"></svg>
+                                
+                                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                    <span style="font-size: 11px; font-weight: 800; color: #0f172a; margin-bottom: 2px;">${trackingNo}</span>
+                                    <svg class="barcode" data-value="${trackingNo}" style="height: 30px; width: 130px; display: block;"></svg>
                                 </div>
                             </div>
-                            <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 8px; margin: 4px 0;">
+
+                            <!-- Content Body -->
+                            <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 8px; margin: 4px 0;">
                                 <div style="border-right: 1px solid #e2e8f0; padding-right: 6px;">
-                                    <span style="color: #64748b; font-size: 9px; font-weight: bold; text-transform: uppercase;">Deliver To:</span><br>
-                                    <strong style="font-size: 12px; color: #0f172a; display: block; margin-top: 1px;">${item.name}</strong>
-                                    <span style="font-size: 10px; color: #334155; line-height: 1.25; display: block; margin-top: 2px;">${item.address}</span>
-                                    <span style="font-size: 10px; font-weight: bold; color: #0f172a; display: block; margin-top: 2px;">📞 ${item.phone}</span>
+                                    <span style="color: #64748b; font-size: 8.5px; font-weight: bold; text-transform: uppercase;">Deliver To:</span><br>
+                                    <strong style="font-size: 11.5px; color: #0f172a; display: block; margin-top: 1px;">${item.name}</strong>
+                                    <span style="font-size: 9.5px; color: #334155; line-height: 1.2; display: block; margin-top: 2px;">${item.address}</span>
+                                    <span style="font-size: 9.5px; font-weight: bold; color: #0f172a; display: block; margin-top: 2px;">📞 ${item.phone}</span>
                                 </div>
-                                <div style="background: #f8fafc; padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0;">
-                                    <span style="color: #64748b; font-size: 9px; font-weight: bold; text-transform: uppercase;">Item Details:</span><br>
-                                    <strong style="font-size: 11px; color: #0f172a; display: block; margin-top: 1px;">${item.item}</strong>
-                                    <div style="font-size: 10px; color: #334155; margin-top: 2px;">Qty: <strong>${item.qty}</strong> | COD: <strong>LKR 0.00</strong></div>
+
+                                <div style="background: #f8fafc; padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between;">
+                                    <div>
+                                        <span style="color: #64748b; font-size: 8.5px; font-weight: bold; text-transform: uppercase;">Item Details:</span><br>
+                                        <strong id="waybill-item-label-${globalIdx}" style="font-size: 11px; color: #0f172a; display: block; margin-top: 1px;">${item.item}</strong>
+                                        <div style="font-size: 9.5px; color: #334155; margin-top: 2px;">Qty: <strong>${item.qty}</strong> | COD: <strong>LKR 0.00</strong></div>
+                                    </div>
+
+                                    <!-- Staff Change Product Option Dropdown (Excluded in Print) -->
+                                    <div class="print:hidden mt-2">
+                                        <label class="text-[8px] font-bold text-indigo-600 block mb-0.5">Change Product:</label>
+                                        <select onchange="updateWaybillItem(${globalIdx}, this.value)" class="w-full text-[10px] p-1 border border-indigo-300 rounded bg-white font-semibold outline-none focus:ring-1 focus:ring-indigo-500">
+                                            ${productOptions}
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 4px; font-size: 9px; color: #64748b;">
+
+                            <!-- Footer -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 4px; font-size: 8.5px; color: #64748b;">
                                 <span>Sender: SS Company, Katugastota</span>
                                 <span>Auth. Signature: ________________</span>
                             </div>
@@ -687,7 +703,6 @@
                     `;
                 });
 
-                // Exactly 2 columns x 3 rows grid fitting precisely on an A4 page
                 pagesHtml += `
                     <div class="a4-page" style="width: 210mm; height: 297mm; padding: 10mm; margin: 0 auto; background: white; box-sizing: border-box; display: grid; grid-template-columns: repeat(2, 92mm); grid-template-rows: repeat(3, 90mm); gap: 6mm; align-content: center; justify-content: center; page-break-after: always;">
                         ${pageCards}
@@ -703,11 +718,9 @@
                     try {
                         JsBarcode(svg, val, { 
                             format: "CODE128", 
-                            displayValue: true, // Enables tracking number text right below the barcode
-                            fontSize: 11,
-                            textMargin: 2,
-                            height: 28,
-                            width: 1.4,
+                            displayValue: false,
+                            height: 26,
+                            width: 1.3,
                             margin: 0 
                         });
                     } catch(err) { console.error(err); }
@@ -722,15 +735,7 @@
                 return;
             }
 
-            const opt = {
-                margin:       0,
-                filename:     'SS_Company_Waybills.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            html2pdf().from(element).set(opt).save();
+            window.print();
         }
 
         function updateManualProgress() {
@@ -740,8 +745,7 @@
                 return;
             }
 
-            const val = Math.min(30, inputVal);
-            accounts[loggedInKey].dailyCount = val;
+            accounts[loggedInKey].dailyCount = inputVal;
             localStorage.setItem('sys_user_accounts', JSON.stringify(accounts));
             updateTargetProgressUI();
 
@@ -756,7 +760,8 @@
             const count = currentAcc.dailyCount || 0;
             const percentage = Math.min(100, (count / 30) * 100);
 
-            document.getElementById('targetTextStatus').innerText = `Completed: ${count} out of 30`;
+            document.getElementById('targetTextStatus').innerText = `Completed: ${count} out of 30 Goal`;
+            document.getElementById('todayShippingCountDisplay').innerText = `${count} Packages`;
             document.getElementById('targetProgressBar').style.width = `${percentage}%`;
             document.getElementById('manualCountInput').value = count;
         }
@@ -766,47 +771,40 @@
             if(!container) return;
             container.innerHTML = '';
             let totalTeamShipped = 0;
-            let totalTeamTarget = 0;
 
             for (let k in accounts) {
                 const acc = accounts[k];
                 const shipped = acc.dailyCount || 0;
-                const target = 30;
                 totalTeamShipped += shipped;
-                totalTeamTarget += target;
-                const percent = Math.min(100, Math.round((shipped / target) * 100));
+                const percent = Math.min(100, Math.round((shipped / 30) * 100));
 
                 const card = document.createElement('div');
                 card.className = "p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-2";
                 card.innerHTML = `
                     <div class="flex justify-between items-center">
                         <span class="font-bold text-xs text-slate-800 dark:text-white uppercase">${acc.name} (${acc.role})</span>
-                        <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400">${shipped} / ${target} Shipped</span>
+                        <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400">${shipped} Packages</span>
                     </div>
                     <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
-                        <div class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: ${percent}%"></div>
+                        <div class="bg-indigo-600 h-full rounded-full transition-all duration-500" style="width: ${percent}%"></div>
                     </div>
                 `;
                 container.appendChild(card);
             }
 
-            document.getElementById('totalTeamShippedBadge').innerText = `Total Shipped: ${totalTeamShipped} / ${totalTeamTarget}`;
+            document.getElementById('totalTeamShippedBadge').innerText = `Total Shipped: ${totalTeamShipped}`;
         }
 
         function initializeSettingsView() {
             const currentAcc = accounts[loggedInKey];
             const adminBox = document.getElementById('adminSelectorBox');
             const adminSelect = document.getElementById('adminAccountSelect');
-            const adminScriptSec = document.getElementById('adminScriptSection');
 
             document.getElementById('settingsMsgBox').classList.add('hidden');
 
             if (currentAcc.role === 'admin') {
-                document.getElementById('settingsHeaderTitle').innerText = "Super Admin: Settings & Script Editor";
+                document.getElementById('settingsHeaderTitle').innerText = "Super Admin: Control Panel";
                 adminBox.classList.remove('hidden');
-                adminScriptSec.classList.remove('hidden');
-
-                document.getElementById('adminCustomScriptInput').value = localStorage.getItem('sys_admin_custom_script') || '';
 
                 adminSelect.innerHTML = '';
                 for (let k in accounts) {
@@ -820,18 +818,10 @@
             } else {
                 document.getElementById('settingsHeaderTitle').innerText = "Profile Details";
                 adminBox.classList.add('hidden');
-                adminScriptSec.classList.add('hidden');
                 activeEditingKey = loggedInKey;
             }
 
             fillEditForm(activeEditingKey);
-        }
-
-        function saveCustomAdminScript() {
-            const scriptCode = document.getElementById('adminCustomScriptInput').value;
-            localStorage.setItem('sys_admin_custom_script', scriptCode);
-            alert("✅ Custom script saved successfully! Refreshing page to apply changes.");
-            location.reload();
         }
 
         function onAdminAccountDropdownChange() {
@@ -870,12 +860,10 @@
             }
 
             msgBox.className = "text-xs font-bold text-emerald-600 bg-emerald-50 p-3 rounded-xl";
-            msgBox.innerText = `✅ Profile details updated successfully for ${newName}!`;
+            msgBox.innerText = `✅ Updated details for ${newName}!`;
             msgBox.classList.remove('hidden');
 
-            setTimeout(() => {
-                switchView('inventory');
-            }, 1000);
+            setTimeout(() => { switchView('inventory'); }, 1000);
         }
 
         function renderStockTable() {
@@ -884,72 +872,53 @@
             const search = document.getElementById('searchInput').value.toLowerCase();
             tbody.innerHTML = '';
 
-            let lowStockCount = 0;
-            const filtered = inventory.filter(item => item.name.toLowerCase().includes(search));
+            const filtered = masterProducts.filter(item => item.name.toLowerCase().includes(search));
+            const isAdmin = loggedInKey && accounts[loggedInKey] && accounts[loggedInKey].role === 'admin';
 
             filtered.forEach((item) => {
-                if (item.qty <= 3) lowStockCount++;
-
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td class="p-3 font-semibold text-slate-800 dark:text-slate-200">${item.name}</td>
                     <td class="p-3 text-slate-500 dark:text-slate-400">${item.category}</td>
                     <td class="p-3 font-medium">LKR ${item.price.toLocaleString()}</td>
-                    <td class="p-3">
-                        <span class="px-2.5 py-1 rounded-lg text-xs font-bold ${item.qty <= 3 ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400' : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400'}">
-                            ${item.qty} units
-                        </span>
-                    </td>
-                    <td class="p-3 text-right space-x-1">
-                        <button onclick="updateQty(${item.id}, 1)" class="bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950 dark:hover:bg-emerald-900 text-emerald-600 dark:text-emerald-400 px-2 py-1 rounded-lg text-xs font-bold">+1</button>
-                        <button onclick="updateQty(${item.id}, -1)" class="bg-rose-50 hover:bg-rose-100 dark:bg-rose-950 dark:hover:bg-rose-900 text-rose-600 dark:text-rose-400 px-2 py-1 rounded-lg text-xs font-bold">-1</button>
-                        <button onclick="openEditItemModal(${item.id})" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 p-1 ml-1" title="Edit Product"><i class="fa-solid fa-pen-to-square"></i></button>
-                        ${loggedInKey && accounts[loggedInKey] && accounts[loggedInKey].role === 'admin' ? `<button onclick="deleteItem(${item.id})" class="text-slate-400 hover:text-rose-600 p-1 ml-1" title="Delete Product"><i class="fa-solid fa-trash"></i></button>` : ''}
+                    <td class="p-3 text-right">
+                        ${isAdmin ? `
+                            <button onclick="openEditItemModal(${item.id})" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 p-1 mr-2" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="deleteItem(${item.id})" class="text-slate-400 hover:text-rose-600 p-1" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                        ` : `<span class="text-xs text-slate-400 italic">View Only</span>`}
                     </td>
                 `;
                 tbody.appendChild(row);
             });
 
-            document.getElementById('totalItemsCount').innerText = inventory.length;
-            document.getElementById('lowStockCount').innerText = `${lowStockCount} Items`;
-            localStorage.setItem('sys_inventory', JSON.stringify(inventory));
-        }
-
-        function updateQty(id, delta) {
-            const item = inventory.find(i => i.id === id);
-            if (item) {
-                item.qty = Math.max(0, item.qty + delta);
-                renderStockTable();
-            }
+            document.getElementById('totalItemsCount').innerText = masterProducts.length;
+            localStorage.setItem('sys_master_products', JSON.stringify(masterProducts));
         }
 
         function deleteItem(id) {
             if (confirm("Are you sure you want to delete this product?")) {
-                inventory = inventory.filter(i => i.id !== id);
-                localStorage.setItem('sys_inventory', JSON.stringify(inventory));
+                masterProducts = masterProducts.filter(i => i.id !== id);
                 renderStockTable();
             }
         }
 
         function openAddItemModal() {
-            document.getElementById('modalTitle').innerText = "Add New Product";
+            document.getElementById('modalTitle').innerText = "Add New Master Product";
             document.getElementById('editItemId').value = "";
             document.getElementById('prodName').value = "";
             document.getElementById('prodCat').value = "";
             document.getElementById('prodPrice').value = "";
-            document.getElementById('prodQty').value = "";
             document.getElementById('itemModal').classList.remove('hidden');
         }
 
         function openEditItemModal(id) {
-            const item = inventory.find(i => i.id === id);
+            const item = masterProducts.find(i => i.id === id);
             if (item) {
-                document.getElementById('modalTitle').innerText = "Edit Product Details";
+                document.getElementById('modalTitle').innerText = "Edit Master Product";
                 document.getElementById('editItemId').value = item.id;
                 document.getElementById('prodName').value = item.name;
                 document.getElementById('prodCat').value = item.category;
                 document.getElementById('prodPrice').value = item.price;
-                document.getElementById('prodQty').value = item.qty;
                 document.getElementById('itemModal').classList.remove('hidden');
             }
         }
@@ -963,26 +932,23 @@
             const name = document.getElementById('prodName').value.trim();
             const cat = document.getElementById('prodCat').value.trim();
             const price = parseFloat(document.getElementById('prodPrice').value);
-            const qty = parseInt(document.getElementById('prodQty').value);
 
-            if (!name || isNaN(price) || isNaN(qty)) {
-                alert("Please fill in Product Name, Price, and Stock Quantity!");
+            if (!name || isNaN(price)) {
+                alert("Please fill in Product Name and Price!");
                 return;
             }
 
             if (editId) {
-                const item = inventory.find(i => i.id == editId);
+                const item = masterProducts.find(i => i.id == editId);
                 if (item) {
                     item.name = name;
                     item.category = cat || 'General';
                     item.price = price;
-                    item.qty = Math.max(0, qty);
                 }
             } else {
-                inventory.push({ id: Date.now(), name, category: cat || 'General', price, qty: Math.max(0, qty) });
+                masterProducts.push({ id: Date.now(), name, category: cat || 'General', price });
             }
 
-            localStorage.setItem('sys_inventory', JSON.stringify(inventory));
             renderStockTable();
             closeModal();
         }
