@@ -282,7 +282,7 @@
                             <div class="p-6 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-4">
                                 <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300">1. Upload Excel / CSV File</label>
                                 <input type="file" id="excelFileInput" accept=".csv, .xlsx, .xls" class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
-                                <p class="text-[11px] text-slate-400">Excel Columns: Name (Col B) | Address (Col C) | Phone (Col D) | Item (Col F) | Qty (Col G) | Price (Col H) | TrackingNo (Col L)</p>
+                                <p class="text-[11px] text-slate-400">Excel Columns: Name (Col B) | Address (Col C) | Phone (Col D) | Item (Col F) | Qty (Col G) | Price (Col I) | TrackingNo (Col L)</p>
                                 <button onclick="processUploadedExcel()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center space-x-2">
                                     <i class="fa-solid fa-upload"></i>
                                     <span>Process and Generate Waybills</span>
@@ -550,7 +550,7 @@
             }
         }
 
-        // ACCURATE EXCEL READ (Col B: Name, Col C: Address, Col D: Phone, Col F: Item, Col G: Qty, Col H: Price, Col L: TrackingNo)
+        // ACCURATE EXCEL READ (Col B: Name, Col C: Address, Col D: Phone, Col F: Item, Col G: Qty, Col I: Price, Col L: TrackingNo)
         function processUploadedExcel() {
             const fileInput = document.getElementById('excelFileInput');
             if (!fileInput.files || fileInput.files.length === 0) {
@@ -587,9 +587,8 @@
                         let item = row[5] ? String(row[5]).trim() : (masterProducts[0] ? masterProducts[0].name : 'General Item');
                         let qty = row[6] ? String(row[6]).trim() : '1';
                         
-                        // Excel එකේ Col H (Index 7) එකෙන් Price (ගණන) ලබා ගැනීම:
-                        let priceVal = row[7] ? String(row[7]).trim() : '0.00';
-                        // ගණන සංඛ්‍යාවක් ලෙස සකසා රුපියල් සත ලෙස Format කිරීම
+                        // Excel එකේ Col I (Index 8) එකෙන් Price ලබා ගැනීම:
+                        let priceVal = row[8] ? String(row[8]).trim() : '0.00';
                         let priceNum = parseFloat(priceVal.replace(/[^0-9.]/g, '')) || 0;
                         let formattedPrice = priceNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                         
@@ -602,7 +601,7 @@
                             phone: phone,
                             item: item,
                             qty: qty,
-                            price: formattedPrice, // Excel එකේ තිබුණු Price එක වෙනස් නොවී රැකගැනීම
+                            price: formattedPrice, 
                             trackingNo: trackingNo
                         });
                     }
@@ -622,7 +621,6 @@
             reader.readAsArrayBuffer(file);
         }
 
-        // Product එක වෙනස් කළ විට Item Name එක පමණක් වෙනස් වන අතර Excel එකෙන් ආපු Price එක හෝ වෙනත් කිසිවක් වෙනස් නොවේ
         function updateWaybillItem(index, newItemValue) {
             if (loadedWaybillData[index]) {
                 loadedWaybillData[index].item = newItemValue;
@@ -733,6 +731,22 @@
                     } catch(err) { console.error(err); }
                 });
             }, 300);
+        }
+
+        function downloadWaybillsPDF() {
+            if (loadedWaybillData.length === 0) {
+                alert("No waybills to export! Please upload an Excel file first.");
+                return;
+            }
+            const element = document.getElementById('pdfExportWrapper');
+            const opt = {
+                margin: 0,
+                filename: 'SS_Company_Waybills.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().from(element).set(opt).save();
         }
 
         function updateManualProgress() {
