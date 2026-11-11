@@ -282,7 +282,7 @@
                             <div class="p-6 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-4">
                                 <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300">1. Upload Excel / CSV File</label>
                                 <input type="file" id="excelFileInput" accept=".csv, .xlsx, .xls" class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
-                                <p class="text-[11px] text-slate-400">Excel Columns: Name (Col B) | Address (Col C) | Phone (Col D) | Item (Col F) | Qty (Col G) | TrackingNo (Col L)</p>
+                                <p class="text-[11px] text-slate-400">Excel Columns: Name (Col B) | Address (Col C) | Phone (Col D) | Item (Col F) | Qty (Col G) | Price (Col H) | TrackingNo (Col L)</p>
                                 <button onclick="processUploadedExcel()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center space-x-2">
                                     <i class="fa-solid fa-upload"></i>
                                     <span>Process and Generate Waybills</span>
@@ -550,7 +550,7 @@
             }
         }
 
-        // ACCURATE EXCEL READ (Col B: Name, Col C: Address, Col D: Phone, Col F: Item, Col G: Qty, Col L: TrackingNo)
+        // ACCURATE EXCEL READ (Col B: Name, Col C: Address, Col D: Phone, Col F: Item, Col G: Qty, Col H: Price, Col L: TrackingNo)
         function processUploadedExcel() {
             const fileInput = document.getElementById('excelFileInput');
             if (!fileInput.files || fileInput.files.length === 0) {
@@ -587,6 +587,12 @@
                         let item = row[5] ? String(row[5]).trim() : (masterProducts[0] ? masterProducts[0].name : 'General Item');
                         let qty = row[6] ? String(row[6]).trim() : '1';
                         
+                        // Excel එකේ Col H (Index 7) එකෙන් Price (ගණන) ලබා ගැනීම:
+                        let priceVal = row[7] ? String(row[7]).trim() : '0.00';
+                        // ගණන සංඛ්‍යාවක් ලෙස සකසා රුපියල් සත ලෙස Format කිරීම
+                        let priceNum = parseFloat(priceVal.replace(/[^0-9.]/g, '')) || 0;
+                        let formattedPrice = priceNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        
                         let trackingNo = row[11] ? String(row[11]).trim() : ("RA" + Math.floor(100000 + Math.random() * 900000));
 
                         loadedWaybillData.push({
@@ -596,6 +602,7 @@
                             phone: phone,
                             item: item,
                             qty: qty,
+                            price: formattedPrice, // Excel එකේ තිබුණු Price එක වෙනස් නොවී රැකගැනීම
                             trackingNo: trackingNo
                         });
                     }
@@ -615,7 +622,7 @@
             reader.readAsArrayBuffer(file);
         }
 
-        // Product වෙනස් කළ විට Phone Number මාරු නොවී Item එක පමණක් වෙනස් වීම
+        // Product එක වෙනස් කළ විට Item Name එක පමණක් වෙනස් වන අතර Excel එකෙන් ආපු Price එක හෝ වෙනත් කිසිවක් වෙනස් නොවේ
         function updateWaybillItem(index, newItemValue) {
             if (loadedWaybillData[index]) {
                 loadedWaybillData[index].item = newItemValue;
@@ -663,7 +670,7 @@
                                 </div>
                             </div>
 
-                            <!-- Content Body: Name, Address, Phone වෙන වෙනම සටහන් කර ඇත -->
+                            <!-- Content Body: Customer Info & Item Details with Original Excel Price -->
                             <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 8px; margin: 4px 0;">
                                 <div style="border-right: 1px solid #e2e8f0; padding-right: 6px; display: flex; flex-direction: column; justify-content: space-between;">
                                     <div>
@@ -680,10 +687,10 @@
                                     <div>
                                         <span style="color: #64748b; font-size: 8.5px; font-weight: bold; text-transform: uppercase;">Item Details:</span><br>
                                         <strong id="waybill-item-label-${globalIdx}" style="font-size: 11px; color: #0f172a; display: block; margin-top: 1px;">${item.item}</strong>
-                                        <div style="font-size: 9.5px; color: #334155; margin-top: 2px;">Qty: <strong>${item.qty}</strong> | COD: <strong>LKR 0.00</strong></div>
+                                        <div style="font-size: 9.5px; color: #334155; margin-top: 2px;">Qty: <strong>${item.qty}</strong> | COD: <strong>LKR ${item.price}</strong></div>
                                     </div>
 
-                                    <!-- Staff Change Product Option Dropdown (Excluded in Print) -->
+                                    <!-- Product Name එක පමණක් වෙනස් කිරීමේ Dropdown එක -->
                                     <div class="print:hidden mt-2">
                                         <label class="text-[8px] font-bold text-indigo-600 block mb-0.5">Change Product:</label>
                                         <select onchange="updateWaybillItem(${globalIdx}, this.value)" class="w-full text-[10px] p-1 border border-indigo-300 rounded bg-white font-semibold outline-none focus:ring-1 focus:ring-indigo-500">
