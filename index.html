@@ -28,27 +28,102 @@
             #pdfExportWrapper { position: absolute; left: 0; top: 0; width: 100%; }
             .a4-page { page-break-after: always; box-shadow: none !important; margin: 0 !important; }
         }
+
+        /* LAMP ANIMATION & INTERACTIVE STYLES */
+        .room-bg {
+            background-color: #0b0f19;
+            transition: background-color 0.8s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .room-bg.light-on {
+            background-color: #1e293b;
+        }
+        .light-beam {
+            position: absolute;
+            top: 0;
+            left: 20%;
+            width: 400px;
+            height: 100%;
+            background: radial-gradient(circle at 30% 20%, rgba(255, 220, 100, 0.15) 0%, rgba(255, 220, 100, 0.03) 40%, transparent 70%);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+        .room-bg.light-on .light-beam {
+            opacity: 1;
+        }
+        .lamp-chain {
+            cursor: pointer;
+            transform-origin: top center;
+            transition: transform 0.1s ease;
+        }
+        .lamp-chain:active {
+            transform: scaleY(1.25);
+        }
+        .login-card-container {
+            opacity: 0.3;
+            filter: blur(6px);
+            pointer-events: none;
+            transition: all 0.6s ease;
+        }
+        .room-bg.light-on .login-card-container {
+            opacity: 1;
+            filter: blur(0);
+            pointer-events: auto;
+        }
     </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 font-sans min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300">
 
-    <!-- LOGIN SCREEN -->
-    <div id="loginScreen" class="min-h-screen bg-slate-900 flex items-center justify-center p-4 bg-gradient-custom">
-        <div class="max-w-4xl w-full bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2 border border-slate-700">
+    <!-- INTERACTIVE LAMP LOGIN SCREEN (As seen in the video) -->
+    <div id="loginScreen" class="min-h-screen room-bg flex items-center justify-center p-4">
+        <div class="light-beam"></div>
+
+        <div class="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center relative z-10 p-6">
             
-            <!-- STAFF LOGIN -->
-            <div class="p-8 bg-slate-50 dark:bg-slate-900/50 flex flex-col justify-center border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800">
-                <div class="flex items-center space-x-3 mb-6">
+            <!-- LAMP INTERACTIVE GRAPHIC (Left Side) -->
+            <div class="flex flex-col items-center justify-center relative py-12">
+                <div class="relative w-64 h-80 flex flex-col items-center">
+                    <!-- Lamp Shade -->
+                    <div class="w-36 h-20 bg-slate-800 rounded-t-full border-b-4 border-amber-400 shadow-2xl relative flex justify-center">
+                        <div id="bulbGlow" class="absolute bottom-[-10px] w-12 h-6 bg-amber-200 rounded-full opacity-0 blur-md transition-opacity duration-300"></div>
+                    </div>
+                    <!-- Lamp Stand Neck & Arm -->
+                    <div class="w-2 h-28 bg-slate-700"></div>
+                    <div class="w-24 h-3 bg-slate-800 rounded-full"></div>
+                    <div class="w-32 h-6 bg-slate-900 rounded-t-xl shadow-lg mt-1"></div>
+
+                    <!-- Interactive Pull Chain -->
+                    <div class="absolute top-16 left-20 flex flex-col items-center lamp-chain" onclick="toggleLampPower()" title="Click to pull & turn on!">
+                        <div class="w-0.5 h-20 bg-slate-400"></div>
+                        <div class="w-3 h-4 bg-amber-500 rounded-full shadow-md hover:bg-amber-400 transition"></div>
+                        <span class="text-[10px] text-amber-300 mt-2 font-bold tracking-wider uppercase bg-slate-900/80 px-2 py-0.5 rounded-full border border-amber-500/30 animate-pulse">Pull to turn on</span>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-400 mt-4 font-medium tracking-wide">💡 Click the lamp chain to illuminate & access login</p>
+            </div>
+
+            <!-- LOGIN CARD CONTAINER (Initially blurred/dim until lamp is pulled) -->
+            <div class="login-card-container bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-slate-700/50 space-y-6">
+                <div class="flex items-center space-x-3 mb-2">
                     <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-800 text-white font-black text-xl flex items-center justify-center shadow-lg tracking-wider border border-indigo-400">
                         SS
                     </div>
                     <div>
                         <h2 class="text-xl font-bold text-slate-900 dark:text-white">SS Company</h2>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Staff Operations Portal</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Operations & Waybill Portal</p>
                     </div>
                 </div>
 
-                <form onsubmit="handleStaffLogin(event)" class="space-y-4">
+                <!-- Tabs to switch between Staff & Admin -->
+                <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+                    <button onclick="switchLoginTab('staff')" id="tabStaffBtn" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white dark:bg-slate-700 text-indigo-600 dark:text-white shadow-sm transition">Staff Login</button>
+                    <button onclick="switchLoginTab('admin')" id="tabAdminBtn" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 transition">Admin Portal</button>
+                </div>
+
+                <!-- STAFF LOGIN FORM -->
+                <form id="staffLoginForm" onsubmit="handleStaffLogin(event)" class="space-y-4">
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Select Staff Member</label>
                         <select id="staffUserSelect" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800">
@@ -67,21 +142,9 @@
                         Login as Staff <i class="fa-solid fa-arrow-right ml-2"></i>
                     </button>
                 </form>
-            </div>
 
-            <!-- ADMIN LOGIN -->
-            <div class="p-8 bg-white dark:bg-slate-900 flex flex-col justify-center">
-                <div class="flex items-center space-x-3 mb-6">
-                    <div class="w-12 h-12 rounded-2xl bg-slate-900 dark:bg-indigo-600 text-white font-black text-xl flex items-center justify-center shadow-lg tracking-wider border border-slate-700">
-                        SS
-                    </div>
-                    <div>
-                        <h2 class="text-xl font-bold text-slate-900 dark:text-white">Admin Portal</h2>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">SS Company Control Panel</p>
-                    </div>
-                </div>
-
-                <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <!-- ADMIN LOGIN FORM -->
+                <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" class="space-y-4 hidden">
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Admin Username</label>
                         <input type="text" id="adminUserInput" value="admin" required
@@ -407,11 +470,70 @@
         let loadedWaybillData = [];
         let loggedInKey = null;
         let activeEditingKey = null;
+        let lampIsOn = false;
 
         window.onload = function() {
             renderStaffLoginDropdown();
             initTheme();
         };
+
+        // LAMP PULL ANIMATION & AUDIO SYNTHESIZER (Matching the video)
+        function toggleLampPower() {
+            lampIsOn = !lampIsOn;
+            const roomBg = document.getElementById('loginScreen');
+            const bulbGlow = document.getElementById('bulbGlow');
+
+            if (lampIsOn) {
+                roomBg.classList.add('light-on');
+                bulbGlow.style.opacity = '1';
+                playClickSound();
+            } else {
+                roomBg.classList.remove('light-on');
+                bulbGlow.style.opacity = '0';
+                playClickSound();
+            }
+        }
+
+        // Web Audio API click & hum synthesizer like the video code
+        function playClickSound() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                const audioCtx = new AudioContext();
+                const now = audioCtx.currentTime;
+
+                const hum = audioCtx.createOscillator();
+                const humGain = audioCtx.createGain();
+                hum.type = "sine";
+                hum.frequency.setValueAtTime(120, now + 0.05);
+                humGain.gain.setValueAtTime(0.001, now);
+                humGain.gain.linearRampToValueAtTime(0.06, now + 0.08);
+                humGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+                hum.connect(humGain);
+                humGain.connect(audioCtx.destination);
+                hum.start(now + 0.05);
+                hum.stop(now + 0.38);
+            } catch(e) { console.log("Audio context not supported or blocked"); }
+        }
+
+        function switchLoginTab(type) {
+            const staffBtn = document.getElementById('tabStaffBtn');
+            const adminBtn = document.getElementById('tabAdminBtn');
+            const staffForm = document.getElementById('staffLoginForm');
+            const adminForm = document.getElementById('adminLoginForm');
+
+            if (type === 'staff') {
+                staffBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white dark:bg-slate-700 text-indigo-600 dark:text-white shadow-sm transition";
+                adminBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 transition";
+                staffForm.classList.remove('hidden');
+                adminForm.classList.add('hidden');
+            } else {
+                adminBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white dark:bg-slate-700 text-indigo-600 dark:text-white shadow-sm transition";
+                staffBtn.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 transition";
+                adminForm.classList.remove('hidden');
+                staffForm.classList.add('hidden');
+            }
+        }
 
         function initTheme() {
             const savedTheme = localStorage.getItem('sys_theme') || 'light';
@@ -550,7 +672,7 @@
             }
         }
 
-        // ACCURATE EXCEL READ (Col B: Name, Col C: Address, Col D: Phone, Col F: Item, Col G: Qty, Col I: Price, Col L: TrackingNo)
+        // EXCEL WAYBILL PROCESSING WITH PRICE (Col I) & TRACKING (Col L)
         function processUploadedExcel() {
             const fileInput = document.getElementById('excelFileInput');
             if (!fileInput.files || fileInput.files.length === 0) {
@@ -587,7 +709,6 @@
                         let item = row[5] ? String(row[5]).trim() : (masterProducts[0] ? masterProducts[0].name : 'General Item');
                         let qty = row[6] ? String(row[6]).trim() : '1';
                         
-                        // Excel එකේ Col I (Index 8) එකෙන් Price ලබා ගැනීම:
                         let priceVal = row[8] ? String(row[8]).trim() : '0.00';
                         let priceNum = parseFloat(priceVal.replace(/[^0-9.]/g, '')) || 0;
                         let formattedPrice = priceNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -668,7 +789,7 @@
                                 </div>
                             </div>
 
-                            <!-- Content Body: Customer Info & Item Details with Original Excel Price -->
+                            <!-- Content Body -->
                             <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 8px; margin: 4px 0;">
                                 <div style="border-right: 1px solid #e2e8f0; padding-right: 6px; display: flex; flex-direction: column; justify-content: space-between;">
                                     <div>
@@ -688,7 +809,6 @@
                                         <div style="font-size: 9.5px; color: #334155; margin-top: 2px;">Qty: <strong>${item.qty}</strong> | COD: <strong>LKR ${item.price}</strong></div>
                                     </div>
 
-                                    <!-- Product Name එක පමණක් වෙනස් කිරීමේ Dropdown එක -->
                                     <div class="print:hidden mt-2">
                                         <label class="text-[8px] font-bold text-indigo-600 block mb-0.5">Change Product:</label>
                                         <select onchange="updateWaybillItem(${globalIdx}, this.value)" class="w-full text-[10px] p-1 border border-indigo-300 rounded bg-white font-semibold outline-none focus:ring-1 focus:ring-indigo-500">
@@ -734,19 +854,7 @@
         }
 
         function downloadWaybillsPDF() {
-            if (loadedWaybillData.length === 0) {
-                alert("No waybills to export! Please upload an Excel file first.");
-                return;
-            }
-            const element = document.getElementById('pdfExportWrapper');
-            const opt = {
-                margin: 0,
-                filename: 'SS_Company_Waybills.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            html2pdf().from(element).set(opt).save();
+            window.print();
         }
 
         function updateManualProgress() {
