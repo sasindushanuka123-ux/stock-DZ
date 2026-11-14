@@ -106,11 +106,11 @@
                     <span>SS COMPANY</span>
                     <span class="inline-block w-2 h-2 rounded-full bg-indigo-500 animate-ping"></span>
                 </h1>
-                <p class="text-[10px] text-indigo-300 font-semibold tracking-widest uppercase">Inventory & OTP Security Hub</p>
+                <p class="text-[10px] text-indigo-300 font-semibold tracking-widest uppercase">Inventory & Stock System</p>
             </div>
         </div>
 
-        <!-- CENTER CONTENT: LAMP & LOGIN / OTP CONTAINER -->
+        <!-- CENTER CONTENT: LAMP & LOGIN CONTAINER -->
         <div class="flex-1 flex items-center justify-center">
             <div class="light-beam"></div>
 
@@ -138,10 +138,9 @@
                     <p class="text-xs text-slate-400 mt-3 font-medium tracking-wide">💡 Tap anywhere on the lamp to illuminate & unlock login</p>
                 </div>
 
-                <!-- LOGIN & OTP CARD CONTAINER -->
+                <!-- LOGIN CARD CONTAINER -->
                 <div class="login-card-container bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-slate-700/50 space-y-6">
                     
-                    <!-- STEP 1: LOGIN CREDENTIALS FORM -->
                     <div id="loginCredentialsBox">
                         <div class="flex items-center space-x-3 mb-2">
                             <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-800 text-white font-black text-base flex items-center justify-center shadow-md tracking-wider border border-indigo-400">
@@ -149,7 +148,7 @@
                             </div>
                             <div>
                                 <h2 class="text-lg font-bold text-slate-900 dark:text-white">Authentication Portal</h2>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Enter credentials to proceed</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Enter credentials to login</p>
                             </div>
                         </div>
 
@@ -176,7 +175,7 @@
                             <div id="staffError" class="text-xs text-rose-600 font-bold hidden">Invalid Password!</div>
 
                             <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold text-sm shadow-md transition">
-                                Next <i class="fa-solid fa-arrow-right ml-2"></i>
+                                Login to Dashboard <i class="fa-solid fa-arrow-right ml-2"></i>
                             </button>
                         </form>
 
@@ -197,70 +196,8 @@
                             <div id="adminError" class="text-xs text-rose-600 font-bold hidden">Invalid Admin Credentials!</div>
 
                             <button type="submit" class="w-full bg-slate-900 hover:bg-black dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white py-3 rounded-xl font-bold text-sm shadow-md transition">
-                                Next <i class="fa-solid fa-lock ml-2"></i>
+                                Login as Admin <i class="fa-solid fa-lock ml-2"></i>
                             </button>
-                        </form>
-                    </div>
-
-                    <!-- STEP 1.5: FIRST TIME PHONE NUMBER ENTRY BOX (If phone not saved yet) -->
-                    <div id="phoneInputBox" class="hidden space-y-4">
-                        <div class="flex items-center space-x-3 mb-2">
-                            <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white font-black text-base flex items-center justify-center shadow-md tracking-wider">
-                                <i class="fa-solid fa-phone"></i>
-                            </div>
-                            <div>
-                                <h2 class="text-lg font-bold text-slate-900 dark:text-white">First Time Phone Setup</h2>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Enter your phone number to receive OTP</p>
-                            </div>
-                        </div>
-
-                        <form onsubmit="savePhoneAndSendOtp(event)" class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Your Mobile Phone Number</label>
-                                <input type="text" id="firstTimePhoneInput" placeholder="e.g. 0771234567" required
-                                    class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-semibold bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
-                            </div>
-
-                            <div class="flex space-x-2">
-                                <button type="button" onclick="cancelPhoneStep()" class="w-1/3 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-700 dark:text-slate-300 py-3 rounded-xl font-bold text-xs transition">
-                                    Back
-                                </button>
-                                <button type="submit" class="w-2/3 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold text-sm shadow-md transition">
-                                    Send OTP Code <i class="fa-solid fa-paper-plane ml-1"></i>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- STEP 2: OTP VERIFICATION BOX -->
-                    <div id="otpVerificationBox" class="hidden space-y-4">
-                        <div class="flex items-center space-x-3 mb-2">
-                            <div class="w-10 h-10 rounded-xl bg-amber-500 text-white font-black text-base flex items-center justify-center shadow-md tracking-wider">
-                                <i class="fa-solid fa-shield-halved"></i>
-                            </div>
-                            <div>
-                                <h2 class="text-lg font-bold text-slate-900 dark:text-white">Phone OTP Verification</h2>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium" id="otpSubText">Enter 4-digit code sent to phone</p>
-                            </div>
-                        </div>
-
-                        <form onsubmit="verifyOtpAndLogin(event)" class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Enter 4-Digit OTP Code</label>
-                                <input type="text" id="otpInputCode" maxlength="4" placeholder="e.g. 1234" required
-                                    class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-amber-500 outline-none text-center font-black text-xl tracking-widest bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
-                            </div>
-
-                            <div id="otpErrorMsg" class="text-xs text-rose-600 font-bold hidden">Invalid OTP code! Please try again.</div>
-
-                            <div class="flex space-x-2">
-                                <button type="button" onclick="cancelOtpStep()" class="w-1/3 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-700 dark:text-slate-300 py-3 rounded-xl font-bold text-xs transition">
-                                    Back
-                                </button>
-                                <button type="submit" class="w-2/3 bg-amber-600 hover:bg-amber-700 text-white py-3 rounded-xl font-bold text-sm shadow-md transition">
-                                    Verify & Login <i class="fa-solid fa-check ml-1"></i>
-                                </button>
-                            </div>
                         </form>
                     </div>
 
@@ -517,12 +454,6 @@
                                 class="w-full px-4 py-3 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-indigo-500 outline-none bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
                         </div>
 
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Phone Number (For SMS OTP)</label>
-                            <input type="text" id="editPhone" placeholder="Enter phone number"
-                                class="w-full px-4 py-3 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-indigo-500 outline-none bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
-                        </div>
-
                         <div id="settingsMsgBox" class="text-xs font-bold hidden p-3 rounded-xl"></div>
 
                         <div class="flex space-x-3 pt-2">
@@ -574,9 +505,9 @@
 
     <script>
         let accounts = JSON.parse(localStorage.getItem('sys_user_accounts')) || {
-            'staff1': { id: 'staff1', name: 'Staff 1', pass: '1234', role: 'staff', dailyCount: 0, phone: '' },
-            'staff2': { id: 'staff2', name: 'Staff 2', pass: '1234', role: 'staff', dailyCount: 0, phone: '' },
-            'admin': { id: 'admin', name: 'admin', pass: '200105', role: 'admin', dailyCount: 0, phone: '' }
+            'staff1': { id: 'staff1', name: 'Staff 1', pass: '1234', role: 'staff', dailyCount: 0 },
+            'staff2': { id: 'staff2', name: 'Staff 2', pass: '1234', role: 'staff', dailyCount: 0 },
+            'admin': { id: 'admin', name: 'admin', pass: '200105', role: 'admin', dailyCount: 0 }
         };
 
         let masterProducts = JSON.parse(localStorage.getItem('sys_master_products')) || [
@@ -591,10 +522,6 @@
         let activeEditingKey = null;
         let lampIsOn = false;
         let tempUploadedImageBase64 = "";
-
-        // OTP Temporary State
-        let pendingLoginKey = null;
-        let generatedOtpCode = "1234";
 
         window.onload = function() {
             renderStaffLoginDropdown();
@@ -700,7 +627,7 @@
 
             if (accounts[key] && accounts[key].pass === pass) {
                 document.getElementById('staffError').classList.add('hidden');
-                checkPhoneAndProceed(key);
+                loginSuccess(key);
             } else {
                 document.getElementById('staffError').classList.remove('hidden');
             }
@@ -714,80 +641,9 @@
             const adminAcc = accounts['admin'];
             if (adminAcc && (userVal === adminAcc.name || userVal === 'admin') && passVal === adminAcc.pass) {
                 document.getElementById('adminError').classList.add('hidden');
-                checkPhoneAndProceed('admin');
+                loginSuccess('admin');
             } else {
                 document.getElementById('adminError').classList.remove('hidden');
-            }
-        }
-
-        // Check if phone number is saved for this account. If not, prompt first time.
-        function checkPhoneAndProceed(key) {
-            pendingLoginKey = key;
-            const user = accounts[key];
-
-            if (!user.phone || user.phone.trim() === '') {
-                // First time: Ask for phone number
-                document.getElementById('loginCredentialsBox').classList.add('hidden');
-                document.getElementById('firstTimePhoneInput').value = '';
-                document.getElementById('phoneInputBox').classList.remove('hidden');
-            } else {
-                // Already saved: Send OTP directly via simulated SMS message
-                sendOtpAndShowVerification(user.phone);
-            }
-        }
-
-        function savePhoneAndSendOtp(e) {
-            e.preventDefault();
-            const phoneInput = document.getElementById('firstTimePhoneInput').value.trim();
-            if (!phoneInput) {
-                alert("Please enter a valid phone number!");
-                return;
-            }
-
-            // Save phone number permanently to account
-            accounts[pendingLoginKey].phone = phoneInput;
-            localStorage.setItem('sys_user_accounts', JSON.stringify(accounts));
-
-            document.getElementById('phoneInputBox').classList.add('hidden');
-            sendOtpAndShowVerification(phoneInput);
-        }
-
-        function cancelPhoneStep() {
-            pendingLoginKey = null;
-            document.getElementById('phoneInputBox').classList.add('hidden');
-            document.getElementById('loginCredentialsBox').classList.remove('hidden');
-        }
-
-        function sendOtpAndShowVerification(phone) {
-            generatedOtpCode = Math.floor(1000 + Math.random() * 9000).toString();
-            
-            // Send normal SMS message popup showing "SS Company" with OTP code
-            alert(`💬 New Message from SS Company\n\nYour OTP Code is: ${generatedOtpCode}\nSent to: ${phone}`);
-
-            document.getElementById('otpSubText').innerText = `Code sent to phone: ${phone}`;
-            document.getElementById('otpInputCode').value = '';
-            document.getElementById('otpErrorMsg').classList.add('hidden');
-
-            document.getElementById('loginCredentialsBox').classList.add('hidden');
-            document.getElementById('otpVerificationBox').classList.remove('hidden');
-        }
-
-        function cancelOtpStep() {
-            pendingLoginKey = null;
-            document.getElementById('otpVerificationBox').classList.add('hidden');
-            document.getElementById('loginCredentialsBox').classList.remove('hidden');
-        }
-
-        function verifyOtpAndLogin(e) {
-            e.preventDefault();
-            const enteredOtp = document.getElementById('otpInputCode').value.trim();
-
-            if (enteredOtp === generatedOtpCode) {
-                document.getElementById('otpVerificationBox').classList.add('hidden');
-                document.getElementById('loginCredentialsBox').classList.remove('hidden');
-                loginSuccess(pendingLoginKey);
-            } else {
-                document.getElementById('otpErrorMsg').classList.remove('hidden');
             }
         }
 
@@ -826,16 +682,12 @@
         function logout() {
             loggedInKey = null;
             activeEditingKey = null;
-            pendingLoginKey = null;
             document.getElementById('dashboardScreen').classList.add('hidden');
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('staffPassInput').value = '';
             document.getElementById('adminPassInput').value = '';
             document.getElementById('staffError').classList.add('hidden');
             document.getElementById('adminError').classList.add('hidden');
-            document.getElementById('otpVerificationBox').classList.add('hidden');
-            document.getElementById('phoneInputBox').classList.add('hidden');
-            document.getElementById('loginCredentialsBox').classList.remove('hidden');
             renderStaffLoginDropdown();
         }
 
@@ -1174,14 +1026,12 @@
             if (acc) {
                 document.getElementById('editUsername').value = acc.name;
                 document.getElementById('editPassword').value = acc.pass;
-                document.getElementById('editPhone').value = acc.phone || "";
             }
         }
 
         function saveAccountSettings() {
             const newName = document.getElementById('editUsername').value.trim();
             const newPass = document.getElementById('editPassword').value.trim();
-            const newPhone = document.getElementById('editPhone').value.trim();
             const msgBox = document.getElementById('settingsMsgBox');
 
             if (!newName || !newPass) {
@@ -1193,7 +1043,6 @@
 
             accounts[activeEditingKey].name = newName;
             accounts[activeEditingKey].pass = newPass;
-            accounts[activeEditingKey].phone = newPhone || "";
 
             localStorage.setItem('sys_user_accounts', JSON.stringify(accounts));
 
