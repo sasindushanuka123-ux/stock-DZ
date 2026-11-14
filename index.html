@@ -105,11 +105,11 @@
                     <span>SS COMPANY</span>
                     <span class="inline-block w-2 h-2 rounded-full bg-indigo-500 animate-ping"></span>
                 </h1>
-                <p class="text-[10px] text-indigo-300 font-semibold tracking-widest uppercase">Inventory & Operations Hub</p>
+                <p class="text-[10px] text-indigo-300 font-semibold tracking-widest uppercase">Inventory & OTP Security Hub</p>
             </div>
         </div>
 
-        <!-- CENTER CONTENT: LAMP & LOGIN CONTAINER -->
+        <!-- CENTER CONTENT: LAMP & LOGIN / OTP CONTAINER -->
         <div class="flex-1 flex items-center justify-center">
             <div class="light-beam"></div>
 
@@ -137,65 +137,107 @@
                     <p class="text-xs text-slate-400 mt-2 font-medium tracking-wide">💡 Click the lamp chain to illuminate & access login</p>
                 </div>
 
-                <!-- LOGIN CARD CONTAINER -->
+                <!-- LOGIN & OTP CARD CONTAINER -->
                 <div class="login-card-container bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-slate-700/50 space-y-6">
-                    <div class="flex items-center space-x-3 mb-2">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-800 text-white font-black text-base flex items-center justify-center shadow-md tracking-wider border border-indigo-400">
-                            SS
+                    
+                    <!-- STEP 1: LOGIN CREDENTIALS FORM -->
+                    <div id="loginCredentialsBox">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-800 text-white font-black text-base flex items-center justify-center shadow-md tracking-wider border border-indigo-400">
+                                SS
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-900 dark:text-white">Authentication Portal</h2>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Enter credentials to trigger phone OTP</p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Authentication Portal</h2>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Select your role to proceed</p>
+
+                        <!-- Tabs to switch between Staff & Admin -->
+                        <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl mb-4">
+                            <button onclick="switchLoginTab('staff')" id="tabStaffBtn" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white dark:bg-slate-700 text-indigo-600 dark:text-white shadow-sm transition">Staff Login</button>
+                            <button onclick="switchLoginTab('admin')" id="tabAdminBtn" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 transition">Admin Portal</button>
                         </div>
+
+                        <!-- STAFF LOGIN FORM -->
+                        <form id="staffLoginForm" onsubmit="handleStaffLogin(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Select Staff Member</label>
+                                <select id="staffUserSelect" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800">
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Password</label>
+                                <input type="password" id="staffPassInput" placeholder="Enter password" required
+                                    class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
+                            </div>
+
+                            <div id="staffError" class="text-xs text-rose-600 font-bold hidden">Invalid Password!</div>
+
+                            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold text-sm shadow-md transition">
+                                Next: Send Phone OTP <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </button>
+                        </form>
+
+                        <!-- ADMIN LOGIN FORM -->
+                        <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" class="space-y-4 hidden">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Admin Username</label>
+                                <input type="text" id="adminUserInput" value="admin" required
+                                    class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-slate-900 outline-none text-sm font-semibold text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Admin Password</label>
+                                <input type="password" id="adminPassInput" placeholder="Enter Admin Password" required
+                                    class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-slate-900 outline-none text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
+                            </div>
+
+                            <div id="adminError" class="text-xs text-rose-600 font-bold hidden">Invalid Admin Credentials!</div>
+
+                            <button type="submit" class="w-full bg-slate-900 hover:bg-black dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white py-3 rounded-xl font-bold text-sm shadow-md transition">
+                                Next: Send Phone OTP <i class="fa-solid fa-lock ml-2"></i>
+                            </button>
+                        </form>
                     </div>
 
-                    <!-- Tabs to switch between Staff & Admin -->
-                    <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
-                        <button onclick="switchLoginTab('staff')" id="tabStaffBtn" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white dark:bg-slate-700 text-indigo-600 dark:text-white shadow-sm transition">Staff Login</button>
-                        <button onclick="switchLoginTab('admin')" id="tabAdminBtn" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 transition">Admin Portal</button>
+                    <!-- STEP 2: OTP VERIFICATION BOX (Hidden initially) -->
+                    <div id="otpVerificationBox" class="hidden space-y-4">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <div class="w-10 h-10 rounded-xl bg-amber-500 text-white font-black text-base flex items-center justify-center shadow-md tracking-wider">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-900 dark:text-white">Phone OTP Verification</h2>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium" id="otpSubText">Enter 4-digit code sent to phone</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 p-3 rounded-xl text-xs text-amber-800 dark:text-amber-300 flex items-center justify-between">
+                            <span>📱 SMS OTP: <strong id="displaySentOtp" class="text-sm font-black underline tracking-widest">1234</strong></span>
+                            <span class="text-[10px] italic opacity-75">(Demo mode code)</span>
+                        </div>
+
+                        <form onsubmit="verifyOtpAndLogin(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Enter 4-Digit OTP Code</label>
+                                <input type="text" id="otpInputCode" maxlength="4" placeholder="e.g. 1234" required
+                                    class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-amber-500 outline-none text-center font-black text-xl tracking-widest bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
+                            </div>
+
+                            <div id="otpErrorMsg" class="text-xs text-rose-600 font-bold hidden">Invalid OTP code! Please try again.</div>
+
+                            <div class="flex space-x-2">
+                                <button type="button" onclick="cancelOtpStep()" class="w-1/3 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-700 dark:text-slate-300 py-3 rounded-xl font-bold text-xs transition">
+                                    Back
+                                </button>
+                                <button type="submit" class="w-2/3 bg-amber-600 hover:bg-amber-700 text-white py-3 rounded-xl font-bold text-sm shadow-md transition">
+                                    Verify & Login <i class="fa-solid fa-check ml-1"></i>
+                                </button>
+                            </div>
+                        </form>
                     </div>
 
-                    <!-- STAFF LOGIN FORM -->
-                    <form id="staffLoginForm" onsubmit="handleStaffLogin(event)" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Select Staff Member</label>
-                            <select id="staffUserSelect" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800">
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Password</label>
-                            <input type="password" id="staffPassInput" placeholder="Enter password" required
-                                class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
-                        </div>
-
-                        <div id="staffError" class="text-xs text-rose-600 font-bold hidden">Invalid Password!</div>
-
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold text-sm shadow-md transition">
-                            Login as Staff <i class="fa-solid fa-arrow-right ml-2"></i>
-                        </button>
-                    </form>
-
-                    <!-- ADMIN LOGIN FORM -->
-                    <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" class="space-y-4 hidden">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Admin Username</label>
-                            <input type="text" id="adminUserInput" value="admin" required
-                                class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-slate-900 outline-none text-sm font-semibold text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Admin Password</label>
-                            <input type="password" id="adminPassInput" placeholder="Enter Admin Password" required
-                                class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-slate-900 outline-none text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
-                        </div>
-
-                        <div id="adminError" class="text-xs text-rose-600 font-bold hidden">Invalid Admin Credentials!</div>
-
-                        <button type="submit" class="w-full bg-slate-900 hover:bg-black dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white py-3 rounded-xl font-bold text-sm shadow-md transition">
-                            Login as Admin <i class="fa-solid fa-lock ml-2"></i>
-                        </button>
-                    </form>
                 </div>
 
             </div>
@@ -449,6 +491,12 @@
                                 class="w-full px-4 py-3 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-indigo-500 outline-none bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
                         </div>
 
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Phone Number (For SMS OTP)</label>
+                            <input type="text" id="editPhone" placeholder="Enter phone number"
+                                class="w-full px-4 py-3 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-indigo-500 outline-none bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
+                        </div>
+
                         <div id="settingsMsgBox" class="text-xs font-bold hidden p-3 rounded-xl"></div>
 
                         <div class="flex space-x-3 pt-2">
@@ -500,9 +548,9 @@
 
     <script>
         let accounts = JSON.parse(localStorage.getItem('sys_user_accounts')) || {
-            'staff1': { id: 'staff1', name: 'Staff 1', pass: '1234', role: 'staff', dailyCount: 0 },
-            'staff2': { id: 'staff2', name: 'Staff 2', pass: '1234', role: 'staff', dailyCount: 0 },
-            'admin': { id: 'admin', name: 'admin', pass: '200105', role: 'admin', dailyCount: 0 }
+            'staff1': { id: 'staff1', name: 'Staff 1', pass: '1234', role: 'staff', dailyCount: 0, phone: '0771234567' },
+            'staff2': { id: 'staff2', name: 'Staff 2', pass: '1234', role: 'staff', dailyCount: 0, phone: '0777654321' },
+            'admin': { id: 'admin', name: 'admin', pass: '200105', role: 'admin', dailyCount: 0, phone: '0719876543' }
         };
 
         let masterProducts = JSON.parse(localStorage.getItem('sys_master_products')) || [
@@ -517,6 +565,10 @@
         let activeEditingKey = null;
         let lampIsOn = false;
         let tempUploadedImageBase64 = "";
+
+        // OTP Temporary State
+        let pendingLoginKey = null;
+        let generatedOtpCode = "1234";
 
         window.onload = function() {
             renderStaffLoginDropdown();
@@ -614,18 +666,21 @@
             }
         }
 
+        // STEP 1: Handle Staff Password Check -> Trigger OTP
         function handleStaffLogin(e) {
             e.preventDefault();
             const key = document.getElementById('staffUserSelect').value;
             const pass = document.getElementById('staffPassInput').value;
 
             if (accounts[key] && accounts[key].pass === pass) {
-                loginSuccess(key);
+                document.getElementById('staffError').classList.add('hidden');
+                triggerOtpStep(key);
             } else {
                 document.getElementById('staffError').classList.remove('hidden');
             }
         }
 
+        // STEP 1: Handle Admin Password Check -> Trigger OTP
         function handleAdminLogin(e) {
             e.preventDefault();
             const userVal = document.getElementById('adminUserInput').value.trim();
@@ -633,9 +688,49 @@
 
             const adminAcc = accounts['admin'];
             if (adminAcc && (userVal === adminAcc.name || userVal === 'admin') && passVal === adminAcc.pass) {
-                loginSuccess('admin');
+                document.getElementById('adminError').classList.add('hidden');
+                triggerOtpStep('admin');
             } else {
                 document.getElementById('adminError').classList.remove('hidden');
+            }
+        }
+
+        // TRIGGER OTP STEP
+        function triggerOtpStep(key) {
+            pendingLoginKey = key;
+            const user = accounts[key];
+            const phone = user.phone || "0770000000";
+
+            // Generate random 4 digit OTP
+            generatedOtpCode = Math.floor(1000 + Math.random() * 9000).toString();
+            
+            document.getElementById('displaySentOtp').innerText = generatedOtpCode;
+            document.getElementById('otpSubText').innerText = `Code sent to phone: ${phone}`;
+            document.getElementById('otpInputCode').value = '';
+            document.getElementById('otpErrorMsg').classList.add('hidden');
+
+            // Switch view inside login card
+            document.getElementById('loginCredentialsBox').classList.add('hidden');
+            document.getElementById('otpVerificationBox').classList.remove('hidden');
+        }
+
+        function cancelOtpStep() {
+            pendingLoginKey = null;
+            document.getElementById('otpVerificationBox').classList.add('hidden');
+            document.getElementById('loginCredentialsBox').classList.remove('hidden');
+        }
+
+        // STEP 2: Verify OTP Code and Complete Login
+        function verifyOtpAndLogin(e) {
+            e.preventDefault();
+            const enteredOtp = document.getElementById('otpInputCode').value.trim();
+
+            if (enteredOtp === generatedOtpCode) {
+                document.getElementById('otpVerificationBox').classList.add('hidden');
+                document.getElementById('loginCredentialsBox').classList.remove('hidden');
+                loginSuccess(pendingLoginKey);
+            } else {
+                document.getElementById('otpErrorMsg').classList.remove('hidden');
             }
         }
 
@@ -674,12 +769,15 @@
         function logout() {
             loggedInKey = null;
             activeEditingKey = null;
+            pendingLoginKey = null;
             document.getElementById('dashboardScreen').classList.add('hidden');
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('staffPassInput').value = '';
             document.getElementById('adminPassInput').value = '';
             document.getElementById('staffError').classList.add('hidden');
             document.getElementById('adminError').classList.add('hidden');
+            document.getElementById('otpVerificationBox').classList.add('hidden');
+            document.getElementById('loginCredentialsBox').classList.remove('hidden');
             renderStaffLoginDropdown();
         }
 
@@ -1020,12 +1118,14 @@
             if (acc) {
                 document.getElementById('editUsername').value = acc.name;
                 document.getElementById('editPassword').value = acc.pass;
+                document.getElementById('editPhone').value = acc.phone || "";
             }
         }
 
         function saveAccountSettings() {
             const newName = document.getElementById('editUsername').value.trim();
             const newPass = document.getElementById('editPassword').value.trim();
+            const newPhone = document.getElementById('editPhone').value.trim();
             const msgBox = document.getElementById('settingsMsgBox');
 
             if (!newName || !newPass) {
@@ -1037,6 +1137,7 @@
 
             accounts[activeEditingKey].name = newName;
             accounts[activeEditingKey].pass = newPass;
+            accounts[activeEditingKey].phone = newPhone || "0770000000";
 
             localStorage.setItem('sys_user_accounts', JSON.stringify(accounts));
 
@@ -1134,7 +1235,7 @@
         }
 
         function saveProduct() {
-            const editId = document.getElementById('editItemId').value;
+            const editId = document.getElementById('editItemId'].value;
             const name = document.getElementById('prodName').value.trim();
             const cat = document.getElementById('prodCat').value.trim();
             const price = parseFloat(document.getElementById('prodPrice').value);
