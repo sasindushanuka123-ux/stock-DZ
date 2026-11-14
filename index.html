@@ -149,7 +149,7 @@
                             </div>
                             <div>
                                 <h2 class="text-lg font-bold text-slate-900 dark:text-white">Authentication Portal</h2>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Enter credentials to trigger phone OTP</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Enter credentials to proceed</p>
                             </div>
                         </div>
 
@@ -176,7 +176,7 @@
                             <div id="staffError" class="text-xs text-rose-600 font-bold hidden">Invalid Password!</div>
 
                             <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold text-sm shadow-md transition">
-                                Next: Send Phone OTP <i class="fa-solid fa-arrow-right ml-2"></i>
+                                Next <i class="fa-solid fa-arrow-right ml-2"></i>
                             </button>
                         </form>
 
@@ -197,12 +197,42 @@
                             <div id="adminError" class="text-xs text-rose-600 font-bold hidden">Invalid Admin Credentials!</div>
 
                             <button type="submit" class="w-full bg-slate-900 hover:bg-black dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white py-3 rounded-xl font-bold text-sm shadow-md transition">
-                                Next: Send Phone OTP <i class="fa-solid fa-lock ml-2"></i>
+                                Next <i class="fa-solid fa-lock ml-2"></i>
                             </button>
                         </form>
                     </div>
 
-                    <!-- STEP 2: OTP VERIFICATION BOX (Hidden initially) -->
+                    <!-- STEP 1.5: FIRST TIME PHONE NUMBER ENTRY BOX (If phone not saved yet) -->
+                    <div id="phoneInputBox" class="hidden space-y-4">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white font-black text-base flex items-center justify-center shadow-md tracking-wider">
+                                <i class="fa-solid fa-phone"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-900 dark:text-white">First Time Phone Setup</h2>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Enter your phone number to receive OTP</p>
+                            </div>
+                        </div>
+
+                        <form onsubmit="savePhoneAndSendOtp(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Your Mobile Phone Number</label>
+                                <input type="text" id="firstTimePhoneInput" placeholder="e.g. 0771234567" required
+                                    class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-semibold bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
+                            </div>
+
+                            <div class="flex space-x-2">
+                                <button type="button" onclick="cancelPhoneStep()" class="w-1/3 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-700 dark:text-slate-300 py-3 rounded-xl font-bold text-xs transition">
+                                    Back
+                                </button>
+                                <button type="submit" class="w-2/3 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold text-sm shadow-md transition">
+                                    Send OTP Code <i class="fa-solid fa-paper-plane ml-1"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- STEP 2: OTP VERIFICATION BOX -->
                     <div id="otpVerificationBox" class="hidden space-y-4">
                         <div class="flex items-center space-x-3 mb-2">
                             <div class="w-10 h-10 rounded-xl bg-amber-500 text-white font-black text-base flex items-center justify-center shadow-md tracking-wider">
@@ -212,11 +242,6 @@
                                 <h2 class="text-lg font-bold text-slate-900 dark:text-white">Phone OTP Verification</h2>
                                 <p class="text-xs text-slate-500 dark:text-slate-400 font-medium" id="otpSubText">Enter 4-digit code sent to phone</p>
                             </div>
-                        </div>
-
-                        <div class="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 p-3 rounded-xl text-xs text-amber-800 dark:text-amber-300 flex items-center justify-between">
-                            <span>📱 SMS OTP: <strong id="displaySentOtp" class="text-sm font-black underline tracking-widest">1234</strong></span>
-                            <span class="text-[10px] italic opacity-75">(Demo mode code)</span>
                         </div>
 
                         <form onsubmit="verifyOtpAndLogin(event)" class="space-y-4">
@@ -549,9 +574,9 @@
 
     <script>
         let accounts = JSON.parse(localStorage.getItem('sys_user_accounts')) || {
-            'staff1': { id: 'staff1', name: 'Staff 1', pass: '1234', role: 'staff', dailyCount: 0, phone: '0771234567' },
-            'staff2': { id: 'staff2', name: 'Staff 2', pass: '1234', role: 'staff', dailyCount: 0, phone: '0777654321' },
-            'admin': { id: 'admin', name: 'admin', pass: '200105', role: 'admin', dailyCount: 0, phone: '0719876543' }
+            'staff1': { id: 'staff1', name: 'Staff 1', pass: '1234', role: 'staff', dailyCount: 0, phone: '' },
+            'staff2': { id: 'staff2', name: 'Staff 2', pass: '1234', role: 'staff', dailyCount: 0, phone: '' },
+            'admin': { id: 'admin', name: 'admin', pass: '200105', role: 'admin', dailyCount: 0, phone: '' }
         };
 
         let masterProducts = JSON.parse(localStorage.getItem('sys_master_products')) || [
@@ -675,7 +700,7 @@
 
             if (accounts[key] && accounts[key].pass === pass) {
                 document.getElementById('staffError').classList.add('hidden');
-                triggerOtpStep(key);
+                checkPhoneAndProceed(key);
             } else {
                 document.getElementById('staffError').classList.remove('hidden');
             }
@@ -689,20 +714,56 @@
             const adminAcc = accounts['admin'];
             if (adminAcc && (userVal === adminAcc.name || userVal === 'admin') && passVal === adminAcc.pass) {
                 document.getElementById('adminError').classList.add('hidden');
-                triggerOtpStep('admin');
+                checkPhoneAndProceed('admin');
             } else {
                 document.getElementById('adminError').classList.remove('hidden');
             }
         }
 
-        function triggerOtpStep(key) {
+        // Check if phone number is saved for this account. If not, prompt first time.
+        function checkPhoneAndProceed(key) {
             pendingLoginKey = key;
             const user = accounts[key];
-            const phone = user.phone || "0770000000";
 
+            if (!user.phone || user.phone.trim() === '') {
+                // First time: Ask for phone number
+                document.getElementById('loginCredentialsBox').classList.add('hidden');
+                document.getElementById('firstTimePhoneInput').value = '';
+                document.getElementById('phoneInputBox').classList.remove('hidden');
+            } else {
+                // Already saved: Send OTP directly via simulated SMS message
+                sendOtpAndShowVerification(user.phone);
+            }
+        }
+
+        function savePhoneAndSendOtp(e) {
+            e.preventDefault();
+            const phoneInput = document.getElementById('firstTimePhoneInput').value.trim();
+            if (!phoneInput) {
+                alert("Please enter a valid phone number!");
+                return;
+            }
+
+            // Save phone number permanently to account
+            accounts[pendingLoginKey].phone = phoneInput;
+            localStorage.setItem('sys_user_accounts', JSON.stringify(accounts));
+
+            document.getElementById('phoneInputBox').classList.add('hidden');
+            sendOtpAndShowVerification(phoneInput);
+        }
+
+        function cancelPhoneStep() {
+            pendingLoginKey = null;
+            document.getElementById('phoneInputBox').classList.add('hidden');
+            document.getElementById('loginCredentialsBox').classList.remove('hidden');
+        }
+
+        function sendOtpAndShowVerification(phone) {
             generatedOtpCode = Math.floor(1000 + Math.random() * 9000).toString();
             
-            document.getElementById('displaySentOtp').innerText = generatedOtpCode;
+            // Send normal SMS message popup showing "SS Company" with OTP code
+            alert(`💬 New Message from SS Company\n\nYour OTP Code is: ${generatedOtpCode}\nSent to: ${phone}`);
+
             document.getElementById('otpSubText').innerText = `Code sent to phone: ${phone}`;
             document.getElementById('otpInputCode').value = '';
             document.getElementById('otpErrorMsg').classList.add('hidden');
@@ -773,6 +834,7 @@
             document.getElementById('staffError').classList.add('hidden');
             document.getElementById('adminError').classList.add('hidden');
             document.getElementById('otpVerificationBox').classList.add('hidden');
+            document.getElementById('phoneInputBox').classList.add('hidden');
             document.getElementById('loginCredentialsBox').classList.remove('hidden');
             renderStaffLoginDropdown();
         }
@@ -1131,7 +1193,7 @@
 
             accounts[activeEditingKey].name = newName;
             accounts[activeEditingKey].pass = newPass;
-            accounts[activeEditingKey].phone = newPhone || "0770000000";
+            accounts[activeEditingKey].phone = newPhone || "";
 
             localStorage.setItem('sys_user_accounts', JSON.stringify(accounts));
 
@@ -1201,7 +1263,7 @@
             document.getElementById('modalTitle').innerText = "Add New Master Product";
             document.getElementById('editItemId').value = "";
             document.getElementById('prodName').value = "";
-            document.getElementById('prodCat').value, "";
+            document.getElementById('prodCat').value = "";
             document.getElementById('prodPrice').value = "";
             document.getElementById('prodImage').value = "";
             document.getElementById('prodImageFile').value = "";
